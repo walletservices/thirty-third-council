@@ -32,3 +32,4 @@ C:\Users\LiamBell\source\repos\MVC-App\MVC-App\MVC-App\obj\Debug\netcoreapp2.2\M
 C:\Users\LiamBell\source\repos\MVC-App\MVC-App\MVC-App\obj\Debug\netcoreapp2.2\MVC-App.pdb
 C:\Users\LiamBell\source\repos\MVC-App\MVC-App\MVC-App\obj\Debug\netcoreapp2.2\MVC-App.csproj.CopyComplete
 C:\Users\LiamBell\source\repos\MVC-App\MVC-App\MVC-App\obj\Debug\netcoreapp2.2\Razor\Views\Home\Api.g.cshtml.cs
+C:\Users\LiamBell\source\repos\MVC-App\MVC-App\MVC-App\obj\Debug\netcoreapp2.2\Razor\Views\Shared\Error.g.cshtml.cs

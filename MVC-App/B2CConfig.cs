@@ -8,7 +8,7 @@ namespace MVC_App
 
         public B2CConfig()
         {
-            B2CConfigInstance = "https://login.microsoft.com/tfp";
+            B2CConfigInstance = "wsispoc.b2clogin.com";
         }
 
         public string ClientId { get; set; }
@@ -22,7 +22,7 @@ namespace MVC_App
         public string RedirectUri { get; set; }
 
         public string DefaultPolicy => SignUpSignInPolicyId;
-        public string Authority => $"{B2}/{Tenant}/{DefaultPolicy}/v2.0";
+        public string Authority => $"https://{B2CConfigInstance}/{Tenant}/{DefaultPolicy}/v2.0";
 
         public string ClientSecret { get; set; }
         public string ApiUrl { get; set; }

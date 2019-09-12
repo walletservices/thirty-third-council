@@ -32,6 +32,11 @@ namespace MVC_App
         {
             return View();
         }
+        public IActionResult Error(string message)
+        {
+            ViewBag.Message = message;
+            return View();
+        }
         [Authorize]
         public async Task<IActionResult> Api()
         {
@@ -47,7 +52,7 @@ namespace MVC_App
                     .WithClientSecret(B2CConfig.ClientSecret)
                     .WithB2CAuthority(B2CConfig.Authority)
                     .Build();
-                new MSALStaticCache(signedInUserID, this.HttpContext).EnablePersistence(cca.UserTokenCache);
+                new MSALStaticCache(signedInUserID, HttpContext).EnablePersistence(cca.UserTokenCache);
 
                 var accounts = await cca.GetAccountsAsync();
                 AuthenticationResult result = await cca.AcquireTokenSilent(scope, accounts.FirstOrDefault())

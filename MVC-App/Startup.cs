@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 
 namespace MVC_App
@@ -47,8 +50,10 @@ namespace MVC_App
             .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
             .AddCookie();
 
-            // Add framework services.
-            services.AddMvc();
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
+            });
 
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
@@ -57,6 +62,7 @@ namespace MVC_App
                 options.IdleTimeout = TimeSpan.FromHours(1);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+
             });
 
 
@@ -64,7 +70,7 @@ namespace MVC_App
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -77,32 +83,11 @@ namespace MVC_App
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseAuthentication();
             app.UseSession();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseHttpsRedirection();
-            app.Use((context, next) =>
-            {
-                context.Request.Scheme = "https";
-                return next();
-            });
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix) && prefix.Count() > 0)
-                {
-                    context.Request.PathBase = prefix.First();
-                }
-                await next.Invoke();
-            });
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-
-            
+            app.UseMvcWithDefaultRoute();
         }
     }
 

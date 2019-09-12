@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace MVC_App.Controllers
 {
+    [EnableCors("MyPolicy")]
     public class SessionController : Controller
     {
 
@@ -24,7 +26,7 @@ namespace MVC_App.Controllers
         [HttpGet]
         public IActionResult SignIn()
         {
-            var redirectUrl = Url.Action(nameof(HomeController.Index), "Home");
+            var redirectUrl = "https://localhost:63884/signin-oidc";
             return Challenge(
                 new AuthenticationProperties { RedirectUri = redirectUrl },
                 OpenIdConnectDefaults.AuthenticationScheme);

@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
@@ -15,9 +16,11 @@ using MVC_App.Models;
 
 namespace MVC_App
 {
+    [EnableCors("MyPolicy")]
     public class HomeController : Controller
     {
         B2CConfig B2CConfig;
+        
         public HomeController(IOptions<B2CConfig> b2cConfig)
         {
             B2CConfig = b2cConfig.Value;

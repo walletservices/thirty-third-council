@@ -12,6 +12,7 @@ using Microsoft.Identity.Client;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
 using MVC_App;
+using MVC_App.Models;
 
 namespace MVC_App
 {
@@ -47,6 +48,13 @@ namespace MVC_App
                 options.UseTokenLifetime = true;
                 options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
 
+                options.CorrelationCookie = new Microsoft.AspNetCore.Http.CookieBuilder
+                {
+                    HttpOnly = false,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None,
+                    SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.None,
+                    Expiration = TimeSpan.FromMinutes(10)
+                };
                 options.Events = new OpenIdConnectEvents()
                 {
                     OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
@@ -73,7 +81,7 @@ namespace MVC_App
                 else if (!string.IsNullOrEmpty(B2CConfig.ApiUrl))
                 {
                     context.ProtocolMessage.Scope += $" offline access {B2CConfig.ApiScopes}";
-                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
                 }
                 return Task.FromResult(0);
             }
@@ -109,7 +117,7 @@ namespace MVC_App
                     .WithRedirectUri(B2CConfig.RedirectUri)
                     .WithClientSecret(B2CConfig.ClientSecret)
                     .Build();
-                //new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
+                new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
 
                 try
                 {

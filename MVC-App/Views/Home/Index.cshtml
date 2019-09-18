@@ -1,16 +1,21 @@
-﻿@model IndexModel
+﻿@using Microsoft.AspNetCore.Authentication
+@model IndexModel
 @{
     ViewData["Title"] = "IS Claims and Attestations";
 }
 
+@if(User.Identity.IsAuthenticated)
+{
+<input id="access_token" type="hidden" value="@ViewContext.HttpContext.GetTokenAsync(".AspNetCore.Cookies").Result" />
+}
 <div class="text-center">
-    <h1 class="display-4">Welcome  Sandy</h1>
+    <h1 class="display-4">Welcome  @User.Identity.Name</h1>
 </div>
 
 <div class="card-group">
     <div class="card-body btn-info"><a asp-page="/Step1">Apply for a Blue Badge</a></div>
 </div>
-<p/>
+<p />
 <div class="card-header ">
 
     <div class="card-group">
@@ -21,5 +26,12 @@
         <div class="card-body col-lg-12 btn-success"><a asp-page="/Step1">AApply for a NIC card via Attestations</a></div>
     </div>
 </div>
+@section scripts{
+    <script>
+        var key = "idToken";
+        var accessToken = document.getElementById("access_token");
+        sessionStorage.setItem(key, accessToken.value);
+    </script>
+}
 
 

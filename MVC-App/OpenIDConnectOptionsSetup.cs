@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Client;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
-using MVC_App;
 using MVC_App.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace MVC_App
 {
@@ -48,13 +45,7 @@ namespace MVC_App
                 options.UseTokenLifetime = true;
                 options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
 
-                options.CorrelationCookie = new Microsoft.AspNetCore.Http.CookieBuilder
-                {
-                    HttpOnly = false,
-                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None,
-                    SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.None,
-                    Expiration = TimeSpan.FromMinutes(10)
-                };
+
                 options.Events = new OpenIdConnectEvents()
                 {
                     OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
@@ -67,7 +58,7 @@ namespace MVC_App
             {
                 Configure(Options.DefaultName, options);
             }
-            public Task OnRedirectToIdentityProvider(RedirectContext context)
+            public async Task<int> OnRedirectToIdentityProvider(RedirectContext context)
             {
                 var defaultPolicy = B2CConfig.DefaultPolicy;
                 if (context.Properties.Items.TryGetValue(B2CConfig.PolicyAuthenticationProperty, out var policy)
@@ -77,13 +68,20 @@ namespace MVC_App
                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
                     context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(defaultPolicy.ToLower(), policy.ToLower());
                     context.Properties.Items.Remove(B2CConfig.PolicyAuthenticationProperty);
+
                 }
                 else if (!string.IsNullOrEmpty(B2CConfig.ApiUrl))
                 {
                     context.ProtocolMessage.Scope += $" offline access {B2CConfig.ApiScopes}";
-                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
+                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                    context.HttpContext.Session.SetString("hello", "world");
+
+
                 }
-                return Task.FromResult(0);
+
+
+
+                return await Task.FromResult(0);
             }
             public Task OnRemoteFailure(RemoteFailureContext context)
             {
@@ -111,21 +109,31 @@ namespace MVC_App
                 // Extract the code from the response notification
                 var code = context.ProtocolMessage.Code;
 
+                
+
                 string signedInUserID = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+                string country = context.Principal.FindFirst(ClaimTypes.Country).Value;
+                string address = context.Principal.FindFirst(ClaimTypes.StreetAddress).Value;
+                string age = context.Principal.FindFirst(ClaimTypes.DateOfBirth).Value;
+                string email = context.Principal.FindFirst(ClaimTypes.Email).Value;
+
+                
+                
                 IConfidentialClientApplication cca = ConfidentialClientApplicationBuilder.Create(B2CConfig.ClientId)
                     .WithB2CAuthority(B2CConfig.Authority)
                     .WithRedirectUri(B2CConfig.RedirectUri)
                     .WithClientSecret(B2CConfig.ClientSecret)
                     .Build();
                 new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
-
                 try
                 {
                     AuthenticationResult result = await cca.AcquireTokenByAuthorizationCode(B2CConfig.ApiScopes.Split(' '), code)
                         .ExecuteAsync();
 
-
+                    context.HttpContext.Session.SetString("id_token", result.AccessToken);
                     context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+
+
                 }
                 catch (Exception ex)
                 {
@@ -134,6 +142,7 @@ namespace MVC_App
                 }
 
             }
+
 
         }
     }

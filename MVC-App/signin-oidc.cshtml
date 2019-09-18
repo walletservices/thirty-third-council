@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Authentication
+
+@{
+    ViewData["Title"] = "IS Claims and Attestations";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <input id="access_token" type="hidden" value="@ViewContext.HttpContext.GetTokenAsync("access_token").Result" />
+}

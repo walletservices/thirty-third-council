@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
@@ -16,7 +16,7 @@ using MVC_App.Models;
 
 namespace MVC_App
 {
-    [EnableCors("MyPolicy")]
+
     public class HomeController : Controller
     {
         B2CConfig B2CConfig;
@@ -28,11 +28,20 @@ namespace MVC_App
         // GET: /<controller>/
         public IActionResult Index()
         {
+       
             return View();
         }
         [Authorize]
         public IActionResult Progress()
         {
+            return View("Views/Home/Progress.cshtml");
+        }
+        [Authorize]
+        public async Task<IActionResult> Process()
+        {
+            User user = new User();
+            
+
             return View();
         }
         public IActionResult Error(string message)
@@ -60,6 +69,7 @@ namespace MVC_App
                 var accounts = await cca.GetAccountsAsync();
                 AuthenticationResult result = await cca.AcquireTokenSilent(scope, accounts.FirstOrDefault())
                     .ExecuteAsync();
+                
 
                 HttpClient client = new HttpClient();
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, B2CConfig.ApiUrl);
@@ -93,6 +103,16 @@ namespace MVC_App
             ViewData["Payload"] = $"{responseString}";
             return View();
         }
+
+        //public string getToken()
+        //{
+        //    AuthenticationResult result = null;
+        //    try
+        //    {
+        //        result = await app.
+        //    }
+        //}
+       
     }
 }
 

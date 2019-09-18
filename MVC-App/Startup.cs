@@ -1,18 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,27 +35,29 @@ namespace MVC_App
             IdentityModelEventSource.ShowPII = true;
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            var key = Encoding.ASCII.GetBytes("Authentication:AzureAdB2C:ClientSecret");
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
             })
-            .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
-            .AddCookie();
-
-            services.Configure<MvcOptions>(options =>
+             .AddAzureAdB2C(options =>
             {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
-            });
-
+                
+                Configuration.Bind("Authentication:AzureAdB2C", options);
+            })
+            .AddJwtBearer().AddCookie();
+            services.AddNodeServices();
+            
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(1);
                 options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-
+                
+               
             });
 
 
@@ -83,12 +78,18 @@ namespace MVC_App
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseAuthentication();
             app.UseSession();
             app.UseStaticFiles();
-            app.UseMvcWithDefaultRoute();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "progress",
+                    template: "{Controller=Home}/{action=Progress}");
+            });
         }
     }
-
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -26,7 +23,8 @@ namespace MVC_App.Controllers
         [HttpGet]
         public IActionResult SignIn()
         {
-            var redirectUrl = "https://localhost:63884/signin-oidc";
+            var redirectUrl = Url.Action(nameof(HomeController.Index), "Home");
+
             return Challenge(
                 new AuthenticationProperties { RedirectUri = redirectUrl },
                 OpenIdConnectDefaults.AuthenticationScheme);
@@ -49,6 +47,8 @@ namespace MVC_App.Controllers
 
             return View();
         }
+
+
 
     }
 }

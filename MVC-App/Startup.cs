@@ -61,13 +61,18 @@ namespace MVC_App
                
             });
 
-            var siccar = new SiccarConfig();
-            Configuration.Bind("Siccar", siccar);
-            var siccarConnector = new SiccarConnector(siccar);
-            services.AddSingleton<ISiccarConnector>(siccarConnector);
-
+            ConfigureSiccar(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        }
+
+        public void ConfigureSiccar(IServiceCollection services)
+        {
+            var siccar = new SiccarConfig();
+            Configuration.Bind("SiccarConfig", siccar);
+            services.AddSingleton<ISiccarConfig>(siccar);
+            services.AddSingleton<ISiccarConnector, SiccarConnector>();
+            services.AddSingleton<ISiccarHttpClient, SiccarHttpClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

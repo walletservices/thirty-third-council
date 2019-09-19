@@ -37,6 +37,7 @@ namespace MVC_App
             var idToken = HttpContext.User.FindFirst("id_token").Value;
 
             var response = _connector.GetProgressReport(idToken);
+            ViewData["Progress"] = response;
             return View("Views/Home/Progress.cshtml");
         }
 

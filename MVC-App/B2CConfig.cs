@@ -24,6 +24,8 @@ namespace MVC_App
         public string DefaultPolicy => SignUpSignInPolicyId;
         public string Authority => $"https://{B2CConfigInstance}/{Tenant}/{DefaultPolicy}/v2.0";
 
+        public string Issuer => $"https://{B2CConfigInstance}/{Tenant}/v2.0";
+
         public string ClientSecret { get; set; }
         public string ApiUrl { get; set; }
         public string ApiScopes { get; set; }

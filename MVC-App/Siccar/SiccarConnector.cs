@@ -13,15 +13,17 @@ namespace MVC_App
     {
 
         private ISiccarConfig _config;
+        private ISiccarHttpClient _client;
 
-        public SiccarConnector(ISiccarConfig config)
+        public SiccarConnector(ISiccarConfig config, ISiccarHttpClient client)
         {
             _config = config;
+            _client = client;
         }
 
         public string GetProgressReport(string idToken)
         {
-            return "Progress report";
+            return _client.Get(_config.GetGetProgressReports, idToken);
         }
 
         public string GetStepNextOrStartProcess(string processid, string idToken)

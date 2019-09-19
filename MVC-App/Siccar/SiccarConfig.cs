@@ -15,5 +15,6 @@ namespace MVC_App.Siccar
         public string GetProcessesThatICanStart { get; set; }
         public string PostStartProcess { get; set; }
         public string PostSubmitStep { get; set; }
+        public string GetGetProgressReports { get; set; }
     }
 }

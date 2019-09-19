@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,9 +40,7 @@ namespace MVC_App
         [Authorize]
         public async Task<IActionResult> Process()
         {
-            User user = new User();
-            
-
+            var user = Thread.CurrentPrincipal.Identity;            
             return View();
         }
         public IActionResult Error(string message)

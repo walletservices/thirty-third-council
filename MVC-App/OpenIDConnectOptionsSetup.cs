@@ -31,6 +31,9 @@ namespace MVC_App
 
         public class OpenIdConnectOptionsSetup : IConfigureNamedOptions<OpenIdConnectOptions>
         {
+
+            private string tempIdToken; 
+
             public OpenIdConnectOptionsSetup(IOptions<B2CConfig> b2cOptions)
             {
                 B2CConfig = b2cOptions.Value;
@@ -50,39 +53,63 @@ namespace MVC_App
                 {
                     OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
                     OnRemoteFailure = OnRemoteFailure,
-                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
+                    OnTicketReceived = OnTokenReceived,
+                    OnMessageReceived = OnMessageReceived,
                 };
+
+                // Usually this is the event that we use but with the config of the Open id connect config it doesnt work
+                //options.Events = new OpenIdConnectEvents()
+                //{
+                //    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived,
+                //};
             }
+
+
+            public async Task<int> OnMessageReceived(MessageReceivedContext context)
+            {
+                if (context != null && context.ProtocolMessage != null && context.ProtocolMessage.IdToken != null)
+                {
+                    tempIdToken = context.ProtocolMessage.IdToken;
+                }
+
+                return await Task.FromResult(0);
+
+            }
+            public async Task<int> OnTokenReceived(TicketReceivedContext context)
+            {
+
+                var identity = context.Principal.Identity as ClaimsIdentity;
+                identity.AddClaim(new Claim("id_token", tempIdToken));
+                return await Task.FromResult(0);
+
+            }
+
 
             public void Configure(OpenIdConnectOptions options)
             {
                 Configure(Options.DefaultName, options);
             }
-            public async Task<int> OnRedirectToIdentityProvider(RedirectContext context)
+
+            public Task OnRedirectToIdentityProvider(RedirectContext context)
             {
                 var defaultPolicy = B2CConfig.DefaultPolicy;
-                if (context.Properties.Items.TryGetValue(B2CConfig.PolicyAuthenticationProperty, out var policy)
-                    && !policy.Equals(defaultPolicy))
+                if (context.Properties.Items.TryGetValue(B2CConfig.PolicyAuthenticationProperty, out var policy) &&
+                    !policy.Equals(defaultPolicy))
                 {
                     context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
                     context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(defaultPolicy.ToLower(), policy.ToLower());
                     context.Properties.Items.Remove(B2CConfig.PolicyAuthenticationProperty);
-
                 }
                 else if (!string.IsNullOrEmpty(B2CConfig.ApiUrl))
                 {
-                    context.ProtocolMessage.Scope += $" offline access {B2CConfig.ApiScopes}";
+                    context.ProtocolMessage.Scope += $" offline_access {B2CConfig.ApiScopes}";
                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-                    context.HttpContext.Session.SetString("hello", "world");
-
-
                 }
-
-
-
-                return await Task.FromResult(0);
+                return Task.FromResult(0);
             }
+
+
             public Task OnRemoteFailure(RemoteFailureContext context)
             {
                 context.HandleResponse();
@@ -103,47 +130,7 @@ namespace MVC_App
                 }
                 return Task.FromResult(0);
             }
-            public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
-            {
-                // Use MSAL to swap the code for an access token
-                // Extract the code from the response notification
-                var code = context.ProtocolMessage.Code;
-
-                
-
-                string signedInUserID = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
-                string country = context.Principal.FindFirst(ClaimTypes.Country).Value;
-                string address = context.Principal.FindFirst(ClaimTypes.StreetAddress).Value;
-                string age = context.Principal.FindFirst(ClaimTypes.DateOfBirth).Value;
-                string email = context.Principal.FindFirst(ClaimTypes.Email).Value;
-
-                
-                
-                IConfidentialClientApplication cca = ConfidentialClientApplicationBuilder.Create(B2CConfig.ClientId)
-                    .WithB2CAuthority(B2CConfig.Authority)
-                    .WithRedirectUri(B2CConfig.RedirectUri)
-                    .WithClientSecret(B2CConfig.ClientSecret)
-                    .Build();
-                new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
-                try
-                {
-                    AuthenticationResult result = await cca.AcquireTokenByAuthorizationCode(B2CConfig.ApiScopes.Split(' '), code)
-                        .ExecuteAsync();
-
-                    context.HttpContext.Session.SetString("id_token", result.AccessToken);
-                    context.HandleCodeRedemption(result.AccessToken, result.IdToken);
-
-
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Handle
-                    throw;
-                }
-
-            }
-
-
+            
         }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
+using MVC_App.Siccar;
 
 namespace MVC_App
 {
@@ -59,8 +60,11 @@ namespace MVC_App
                 
                
             });
-            var siccar = new SiccarOptions();
+
+            var siccar = new SiccarConfig();
+            Configuration.Bind("Siccar", siccar);
             var siccarConnector = new SiccarConnector(siccar);
+            services.AddSingleton<ISiccarConnector>(siccarConnector);
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

@@ -21,6 +21,7 @@ namespace MVC_App
     public class HomeController : Controller
     {
         B2CConfig B2CConfig;
+        ISiccarConnector _connector;
         
         public HomeController(IOptions<B2CConfig> b2cConfig)
         {
@@ -40,7 +41,6 @@ namespace MVC_App
         [Authorize]
         public async Task<IActionResult> Process()
         {
-            var user = Thread.CurrentPrincipal.Identity;            
             return View();
         }
         public IActionResult Error(string message)

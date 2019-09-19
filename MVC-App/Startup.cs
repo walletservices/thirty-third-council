@@ -59,6 +59,8 @@ namespace MVC_App
                 
                
             });
+            var siccar = new SiccarOptions();
+            var siccarConnector = new SiccarConnector(siccar);
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

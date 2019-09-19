@@ -20,29 +20,26 @@ namespace MVC_App
 
     public class HomeController : Controller
     {
-        B2CConfig B2CConfig;
         ISiccarConnector _connector;
         
-        public HomeController(IOptions<B2CConfig> b2cConfig)
+        public HomeController(ISiccarConnector connector)
         {
-            B2CConfig = b2cConfig.Value;
+            _connector = connector;
         }
-        // GET: /<controller>/
+
         public IActionResult Index()
         {
-       
             return View();
         }
         [Authorize]
         public IActionResult Progress()
         {
+            var idToken = HttpContext.User.FindFirst("id_token").Value;
+
+            var response = _connector.GetProgressReport(idToken);
             return View("Views/Home/Progress.cshtml");
         }
-        [Authorize]
-        public async Task<IActionResult> Process()
-        {
-            return View();
-        }
+
         public IActionResult Error(string message)
         {
             ViewBag.Message = message;
@@ -51,20 +48,12 @@ namespace MVC_App
         [Authorize]
         public async Task<IActionResult> Api()
         {
-            string signedInUserID = HttpContext.User.FindFirst("id_token").Value;
-            ViewData["Payload"] = $"{signedInUserID}";
+            string idToken = HttpContext.User.FindFirst("id_token").Value;
+
+            ViewData["Payload"] = _connector.GetStepNextOrStartProcess("1", idToken);
             return View();
         }
 
-        //public string getToken()
-        //{
-        //    AuthenticationResult result = null;
-        //    try
-        //    {
-        //        result = await app.
-        //    }
-        //}
-       
     }
 }
 

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC_App.Siccar;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MVC_App
@@ -61,5 +63,44 @@ namespace MVC_App
             ViewData["Payload"] = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken);
             return View("Api");
         }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> SubmitAction(Dictionary<string, string> parameters)
+        {
+            var actorId = HttpContext.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+
+            JArray fields = new JArray();
+            foreach (var pair in parameters)
+            {
+                if (pair.Key != "previousStepId" && pair.Key != "__RequestVerificationToken")
+                {
+                    JObject f = new JObject();
+                    f.Add("id", pair.Key);
+                    f.Add("value", pair.Value);
+                    fields.Add(f);
+                }
+            }
+            
+
+            dynamic post = new { actorId, fields };
+
+            var idToken = HttpContext.User.FindFirst("id_token").Value;
+            await _connector.SubmitStep(post, idToken, parameters["previousStepId"]);
+          
+
+            return View("Api");
+
+        }
     }
 }
+
+//{
+//  "actorId": "string",
+//  "fields": [
+//    {
+//      "id": "string",
+//      "value": "string"
+//    }
+//  ]
+//}

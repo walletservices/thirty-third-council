@@ -42,9 +42,7 @@
             }
             if (type == "MultiOption")
             {
-                @{
-                    var options = field.schemaField.options;
-                }
+                var options = field.schemaField.options;
                 <select name="@id" value="@id">
 
                     @foreach (var option in options)

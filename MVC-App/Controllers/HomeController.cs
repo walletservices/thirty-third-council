@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC_App.Siccar;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,11 +26,11 @@ namespace MVC_App
             return View();
         }
         [Authorize]
-        public IActionResult Progress()
+        public async Task<IActionResult> Progress()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
 
-            var response = _connector.GetProgressReport(idToken);
+            var response = await _connector.GetProgressReport(idToken);
             ViewData["Progress"] = response;
             return View("Views/Home/Progress.cshtml");
         }
@@ -44,24 +45,32 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessA()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            ViewData["Payload"] = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
-            return View("Api");
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
+            dynamic model = JsonConvert.DeserializeObject(content);
+            ViewData["Payload"] = content;
+            return View("Api", model);
+
         }
 
         [Authorize]
         public async Task<IActionResult> StartProcessB()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            ViewData["Payload"] = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken);
-            return View("Api");
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken);
+            dynamic model = JsonConvert.DeserializeObject(content);
+            ViewData["Payload"] = content;
+            return View("Api", model);
+
         }
 
         [Authorize]
         public async Task<IActionResult> StartProcessC()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            ViewData["Payload"] = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken);
-            return View("Api");
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken);
+            dynamic model = JsonConvert.DeserializeObject(content);
+            ViewData["Payload"] = content;
+            return View("Api", model);
         }
 
         [Authorize]
@@ -73,7 +82,9 @@ namespace MVC_App
             JArray fields = new JArray();
             foreach (var pair in parameters)
             {
-                if (pair.Key != "previousStepId" && pair.Key != "__RequestVerificationToken")
+                if (pair.Key != "previousStepId" 
+                    && pair.Key != "__RequestVerificationToken"
+                    && !pair.Key.StartsWith("xxx"))
                 {
                     JObject f = new JObject();
                     f.Add("id", pair.Key);
@@ -81,26 +92,14 @@ namespace MVC_App
                     fields.Add(f);
                 }
             }
-            
 
             dynamic post = new { actorId, fields };
 
             var idToken = HttpContext.User.FindFirst("id_token").Value;
             await _connector.SubmitStep(post, idToken, parameters["previousStepId"]);
-          
 
-            return View("Api");
+            return RedirectToAction("Index");
 
         }
     }
 }
-
-//{
-//  "actorId": "string",
-//  "fields": [
-//    {
-//      "id": "string",
-//      "value": "string"
-//    }
-//  ]
-//}

@@ -1,23 +1,60 @@
-﻿@{
+﻿@model dynamic
+@{
     ViewData["Title"] = "API";
 }
 <h2>@ViewData["Title"]</h2>
-<h3>API Payload:</h3>
-<p>@ViewData["Payload"]</p>
+
+
+
+@{
+    var fields = Model.fields.target;
+
+
+}
 
 
 @using (Html.BeginForm("SubmitAction", "Home", FormMethod.Post))
 {
-<p>
-    Previous Step Id From the payload Above  <input type="text" class"text" placeholder="Please enter the previousStep id" id="previousStepId" name="previousStepId" />
-<br />
-    First name <input type="text" class="text" placeholder="Fisrt name " id="f452fc6d-e07b-4157-a2f5-a86efd3b2f65" name="f452fc6d-e07b-4157-a2f5-a86efd3b2f65" />
-<br />
-    Last name <input type="text" class="text" placeholder="Last name " id="98ff66db-5748-46b1-bf0e-efa0c902c160" name="98ff66db-5748-46b1-bf0e-efa0c902c160" />
-<br/>
-    DOB (Must be epoch) <input type="text" class="text"  id="e536b4b3-3216-4e1f-9cd9-54854bb4896e" name="e536b4b3-3216-4e1f-9cd9-54854bb4896e" />
- <BR/>
-    <input type="submit" class="submit" value="Go" />
-</p>
+    <input type="hidden" value="@Model.summary.previousStepId" class"text" id="previousStepId" name="previousStepId" />
+    <p>
+        @foreach (var field in fields)
+        {
+            var label = field.schemaField.label;
+            var labelDisplay = label[0].display;
+            var id = field.schemaField.id;
+
+            var type = field.schemaField.type;
+
+            @labelDisplay
+
+            if (type == "Number")
+            {
+                <input type="number" class="text " placeholder="@labelDisplay" id="@id" name="@id" />
+            }
+            else if (type == "Date")
+            {
+                <input type="hidden" class="text " placeholder="@labelDisplay" id="@id" name="@id" />
+                <input type="date" class="text " placeholder="@labelDisplay" id="xxx-@id" name="xxx-@id" onchange="updateDateField('@id')" />
+            }
+            else
+            {
+                <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" />
+            }
+
+        }
+
+        <BR />
+        <input type="submit" class="submit" value="Submit" />
+    </p>
 }
 
+<script language="javascript">
+
+    function updateDateField(id) {
+        console.log("test");
+        var dateStr = $("#xxx-" + id).val();
+        var formattedDays = dateStr.split("-");
+        var epoch = new Date(formattedDays[0], formattedDays[1] - 1, formattedDays[2]).valueOf() / 1000;
+        $("#" + id).val(epoch);
+    }
+</script>

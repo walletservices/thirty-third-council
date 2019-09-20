@@ -12,7 +12,6 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.Providers.Core" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
@@ -22,11 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Graph" Version="1.17.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.3.1" />
-    <PackageReference Include="Microsoft.Owin.Security.Cookies" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Security.Jwt" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Security.Oauth" Version="4.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
   </ItemGroup>

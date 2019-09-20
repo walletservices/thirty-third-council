@@ -16,5 +16,8 @@ namespace MVC_App.Siccar
         public string PostStartProcess { get; set; }
         public string PostSubmitStep { get; set; }
         public string GetGetProgressReports { get; set; }
+        public string ProcessAVersion { get; set; }
+        public string ProcessBVersion { get; set; }
+        public string ProcessCVersion { get; set; }
     }
 }

@@ -1,15 +1,11 @@
 ﻿@model dynamic
 @{
-    ViewData["Title"] = "API";
+    ViewData["Title"] = "Please Populate the Form";
 }
 <h2>@ViewData["Title"]</h2>
 
-
-
 @{
     var fields = Model.fields.target;
-
-
 }
 
 
@@ -39,6 +35,27 @@
             else
             {
                 <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" />
+            }
+            if (type == "Checkbox")
+            {
+                <input type="checkbox" class="text " id="@id" name="@id" />
+            }
+            if (type == "MultiOption")
+            {
+                @{
+                    var options = field.schemaField.options;
+                }
+                <select name="@id" value="@id">
+
+                    @foreach (var option in options)
+                    {
+                        var display = option.input[0].display;
+                        var value = option.value;
+
+                        <option value="@value">@display</option>
+                    }
+
+                </select>
             }
 
         }

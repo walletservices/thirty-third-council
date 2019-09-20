@@ -38,6 +38,14 @@ namespace MVC_App
             return FindActionFromResponse(actionsToExecute, schemaId, schemaVersionId);
         }
 
+        public async Task<string> SubmitStep(dynamic content, string idToken, string stepId)
+        {
+            var stringContent = JsonConvert.SerializeObject(content);
+            var endpoint = _config.PostSubmitStep.Replace("{id}", stepId);
+            await _client.Post(endpoint, idToken, stringContent);
+            return "done";
+        }
+
         private string FindActionFromResponse(string actionsToExecute, string schemaId, string schemaVersionId)
         {
             try

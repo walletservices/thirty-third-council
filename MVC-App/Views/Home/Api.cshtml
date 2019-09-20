@@ -4,3 +4,20 @@
 <h2>@ViewData["Title"]</h2>
 <h3>API Payload:</h3>
 <p>@ViewData["Payload"]</p>
+
+
+@using (Html.BeginForm("SubmitAction", "Home", FormMethod.Post))
+{
+<p>
+    Previous Step Id From the payload Above  <input type="text" class"text" placeholder="Please enter the previousStep id" id="previousStepId" name="previousStepId" />
+<br />
+    First name <input type="text" class="text" placeholder="Fisrt name " id="f452fc6d-e07b-4157-a2f5-a86efd3b2f65" name="f452fc6d-e07b-4157-a2f5-a86efd3b2f65" />
+<br />
+    Last name <input type="text" class="text" placeholder="Last name " id="98ff66db-5748-46b1-bf0e-efa0c902c160" name="98ff66db-5748-46b1-bf0e-efa0c902c160" />
+<br/>
+    DOB (Must be epoch) <input type="text" class="text"  id="e536b4b3-3216-4e1f-9cd9-54854bb4896e" name="e536b4b3-3216-4e1f-9cd9-54854bb4896e" />
+ <BR/>
+    <input type="submit" class="submit" value="Go" />
+</p>
+}
+

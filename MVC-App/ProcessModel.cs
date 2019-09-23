@@ -10,7 +10,6 @@ namespace MVC_App
 {
     public class ProcessModel
     {
-        [JsonObject]
         public class ProcessSchema
         {
             [JsonProperty("schemaId")]
@@ -21,9 +20,7 @@ namespace MVC_App
             public string schemaTitle { get; set; }
             [JsonProperty("stepStatuses")]
             public List<StepStatus> stepStatuses { get; set; }
-            
         }
-        [JsonObject]
         public class StepStatus
         {
             [JsonProperty("stepIndex")]

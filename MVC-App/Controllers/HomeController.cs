@@ -35,9 +35,11 @@ namespace MVC_App
 
             var response = await _connector.GetProgressReport(idToken);
             JArray jsonObject = JArray.Parse(response);
-            var jsonObjectList = jsonObject.ToObject<List<ProcessModel>>();
+            var jsonObjectList = jsonObject.ToObject<List<ProcessModel.ProcessSchema>>();
             DataTable dt = DataTableHelper.ToDataTable(jsonObjectList);
-            
+            dt.TableName = "Progress Reports";
+            dt.Columns.Remove("stepStatuses");
+
             return View(dt);
         }
 

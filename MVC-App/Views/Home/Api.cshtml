@@ -7,6 +7,8 @@
 @{
     var fields = Model.fields.target;
     var lastComment = Model.receivedComments.Count > 0 ? Model.receivedComments[0] : "";
+
+    var guidanceNotes = Model.summary.guidanceNotes.Count > 0 ? Model.summary.guidanceNotes[0].display : "";
 }
 
 
@@ -16,7 +18,16 @@
     <h3>This has been previously rejected</h3>
     <p></p>
     <h4>@lastComment</h4>
-    <p/>
+    <p />
+}
+
+@if (guidanceNotes!= "")
+{
+    <p></p>
+    <h3>Guidance Notes</h3>
+    <p></p>
+    <h4>@guidanceNotes</h4>
+    <p />
 }
 
 @using (Html.BeginForm("SubmitAction", "Home", FormMethod.Post))
@@ -29,43 +40,61 @@
             var label = field.schemaField.label;
             var labelDisplay = label[0].display;
             var id = field.schemaField.id;
-            var defaultValue = field.mostRecentlyRejectedValue;
+            var defaultValue = field.mostRecentlyRejectedValue == null ? "" : field.mostRecentlyRejectedValue;
 
             var type = field.schemaField.type;
 
+            var help = field.schemaField.help.Count > 0 ? field.schemaField.help[0].display : "";
+
+
+            <br />
+           
+            @if (help != "")
+            {
+                @help
+                <br/>
+            }
             @labelDisplay
 
             if (type == "Number")
             {
-                <input type="number" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue " />
+                <input type="number" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
             }
             else if (type == "Date")
             {
                 <input type="hidden" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
                 <input type="date" class="text " placeholder="@labelDisplay" id="xxx-@id" name="xxx-@id" value="@defaultValue" />
             }
-            else
+            else if (type == "Checkbox")
             {
-                <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
+                <input type="checkbox" class="text " id="@id" name="@id" value="@defaultValue" />
             }
-            if (type == "Checkbox")
-            {
-                <input type="checkbox" class="text " id="@id" name="@id" checked="@defaultValue" />
-            }
-            if (type == "MultiOption")
+            else if (type == "MultiOption")
             {
                 var options = field.schemaField.options;
-                <select name="@id" value="@id">
+                <select name="@id" id="@id">
 
                     @foreach (var option in options)
                     {
                         var display = option.input[0].display;
                         var value = option.value;
 
-                        <option value="@value">@display</option>
+                        if (value == defaultValue)
+                        {
+                            <option value="@value" selected>@display</option>
+                        }
+                        else
+                        {
+                            <option value="@value">@display</option>
+                        }
+
                     }
 
                 </select>
+            }
+            else
+            {
+                <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
             }
 
         }
@@ -86,9 +115,17 @@
             }
         })
 
+        $('input[type=checkbox]').each(function () {
+            if ($(this).val() == "true") {
+                $(this).prop('checked');
+            }
+            else {
+                $(this).prop('checked', false);
+            }
+        });
 
         $('input[type=date]').blur(function () {
-            var dateStr = $(this).val();          
+            var dateStr = $(this).val();
             if (dateStr == "") {
                 $("#" + getCorrectFieldName($(this).attr("name"))).val("");
                 return;
@@ -97,6 +134,18 @@
             var epoch = new Date(formattedDays[0], formattedDays[1] - 1, formattedDays[2]).valueOf() / 1000;
             $("#" + getCorrectFieldName($(this).attr("name"))).val(epoch);
         })
+
+
+        $('input[type=submit]').click(function () {
+            $('input[type=checkbox]').each(function () {
+                if ($(this).prop('checked')) {
+                    $(this).val("true");
+                }
+                else {
+                    $(this).val("false");
+                }
+            })
+        });
 
     });
 

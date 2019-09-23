@@ -21,6 +21,7 @@ namespace MVC_App
             public string schemaTitle { get; set; }
             [JsonProperty("stepStatuses")]
             public List<StepStatus> stepStatuses { get; set; }
+            
         }
         [JsonObject]
         public class StepStatus

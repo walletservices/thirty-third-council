@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Data;
+using System.ComponentModel;
 
 namespace MVC_App
 {
@@ -31,8 +34,11 @@ namespace MVC_App
             var idToken = HttpContext.User.FindFirst("id_token").Value;
 
             var response = await _connector.GetProgressReport(idToken);
-            ViewData["Progress"] = response;
-            return View("Views/Home/Progress.cshtml");
+            JArray jsonObject = JArray.Parse(response);
+            var jsonObjectList = jsonObject.ToObject<List<ProcessModel>>();
+            DataTable dt = DataTableHelper.ToDataTable(jsonObjectList);
+            
+            return View(dt);
         }
 
         public IActionResult Error(string message)
@@ -101,5 +107,6 @@ namespace MVC_App
             return RedirectToAction("Index");
 
         }
+
     }
 }

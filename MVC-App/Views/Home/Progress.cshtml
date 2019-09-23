@@ -1,4 +1,5 @@
-﻿@model PrivacyModel
+﻿@model DataTable
+@using  System.Data;
 @{
     ViewData["Title"] = "Progress";
 }
@@ -7,6 +8,27 @@
 
 
 @ViewData["Progress"]
+<table class="table table-hover">
+    <thead>
+        <tr>
+            @foreach (DataColumn col in Model.Columns)
+            {
+                <th>@col.ColumnName</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                @foreach (DataColumn col in Model.Columns)
+                {
+                    <td>@row[col.ColumnName]</td>
+                }
+            </tr>
+        }
+    </tbody>
+    </table>
 <p>Progress to be displayed like the executor.</p>
 
 

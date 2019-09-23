@@ -44,8 +44,7 @@ namespace MVC_App
 
             })
              .AddAzureAdB2C(options =>
-            {
-                
+            { 
                 Configuration.Bind("Authentication:AzureAdB2C", options);
             })
             .AddJwtBearer().AddCookie();

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Data;
 using System.ComponentModel;
+using static MVC_App.ProcessModel;
 
 namespace MVC_App
 {
@@ -35,11 +36,27 @@ namespace MVC_App
 
             var response = await _connector.GetProgressReport(idToken);
             JArray jsonObject = JArray.Parse(response);
-            var jsonObjectList = jsonObject.ToObject<List<ProcessModel.ProcessSchema>>();
+            var jsonObjectList = jsonObject.ToObject<List<ProcessSchema>>();
+
+
+
             DataTable dt = DataTableHelper.ToDataTable(jsonObjectList);
             dt.TableName = "Progress Reports";
-            dt.Columns.Remove("stepStatuses");
+            dt.Columns.Add("Current Step", typeof(int));
+            dt.Columns.Add("Current Step title", typeof(string));
 
+            foreach (var v in jsonObjectList)
+            {
+                var x = v.stepStatuses.Find(s => s.stepIndex > -1);
+                foreach (DataRow row in dt.Rows)
+                {
+                    //need to set value to NewColumn column
+                    row["Current Step"] = x.stepIndex + 1;   // or set it to some other value
+                    row["Current Step Title"] = x.stepTitle;
+                }
+            }
+
+            dt.Columns.Remove("stepStatuses");
             return View(dt);
         }
 

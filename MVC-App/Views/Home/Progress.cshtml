@@ -1,4 +1,4 @@
-﻿@model DataTable
+﻿@model List<DataTable>
 @using System.Data;
 @{
     ViewData["Title"] = "Progress";
@@ -9,34 +9,30 @@
 
 @ViewData["Progress"]
 <h2>Progress</h2>
-<table class="table table-hover">
-    <thead>
-        <tr>
-            @foreach (DataColumn col in Model.Columns)
-            {
-                <th>@col.ColumnName</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (DataRow row in Model.Rows)
-        {
+
+@foreach (var table in Model)
+{
+    <br />
+    <table class="table table-hover">
+        <thead>
             <tr>
-                @foreach (DataColumn col in Model.Columns)
+                @foreach (DataColumn col in table.Columns)
                 {
-                    <td>@row[col.ColumnName]</td>
+                    <th>@col.ColumnName</th>
                 }
             </tr>
-        }
-    </tbody>
+        </thead>
+        <tbody>
+            @foreach (DataRow row in table.Rows)
+            {
+                <tr>
+                    @foreach (DataColumn col in table.Columns)
+                    {
+                        <td>@row[col.ColumnName]</td>
+                    }
+                </tr>
+            }
+        </tbody>
     </table>
-<p>Progress to be displayed like the executor.</p>
+}
 
-
-<div class="form-inline">
-    <div>Step 1 - Done </div>
-    <div>Step 2 - In Progress </div>
-    <div>Step 3 - Todo </div>
-    <div>Step 4 -To DO </div>
-
-</div>

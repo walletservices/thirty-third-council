@@ -9,28 +9,30 @@ namespace MVC_App
 {
     public static class DataTableHelper
     {
-        public static DataTable ToDataTable<T>(this IList<T> data)
+        public static void Populate(DataTable table, IList<ProcessModel.StepStatus> data)
         {
-            PropertyDescriptorCollection props =
-                TypeDescriptor.GetProperties(typeof(T));
-            DataTable table = new DataTable();
-            for (int i = 0; i < props.Count; i++)
+
+            var firstNull = 0;
+            foreach (var d in data)
             {
-                PropertyDescriptor prop = props[i];
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType)
-                    ?? prop.PropertyType);
-            }
-            object[] values = new object[props.Count];
-            foreach (T item in data)
-            {
-                for (int i = 0; i < values.Length; i++)
+                if (d.completionTime == null)
                 {
-                    values[i] = props[i].GetValue(item);
+                    firstNull = d.stepIndex;
+                    break;
                 }
-                table.Rows.Add(values);
             }
-            return table;
+
+            foreach (var d in data.Reverse())
+            {
+                var status = d.completionTime == null ? "To Do" : "Completed";
+                if (d.stepIndex == firstNull)
+                {
+                    status = "In Progress";    
+                }
+                object[] row = new object[3] { d.stepIndex, d.stepTitle, status };
+                table.Rows.Add(row);
+            }
         }
-      
+
     }
 }

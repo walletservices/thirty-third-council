@@ -17,6 +17,7 @@ namespace MVC_App
 
     public class HomeController : Controller
     {
+        HttpClient client = new HttpClient();
         ISiccarConnector _connector;
         ISiccarConfig _config;
 
@@ -68,10 +69,11 @@ namespace MVC_App
         {
 
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
-            dynamic model = JsonConvert.DeserializeObject(content);
             var attestationToken = await extendTokenAttestation();
             HttpContext.Session.SetString("attestationToken", attestationToken);
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
+            dynamic model = JsonConvert.DeserializeObject(content);
+            
             ViewData["Payload"] = content;
             return View("Api", model);
 
@@ -103,15 +105,12 @@ namespace MVC_App
         [HttpPost]
         public async Task<string> extendTokenAttestation()
         {
-            HttpClient client = new HttpClient();
-
             var config = new Dictionary<string, string>();
             config.Add("client_id", "thirty-third-council");
             config.Add("grant_type", "wallettoattestations");
             config.Add("token", HttpContext.User.FindFirst("id_token").Value);
-            config.Add("scopes", "field_attestation, has_blue_badge, fork_handles, four_candles");
+            config.Add("scopes", "field_attestation,has_blue_badge,fork_handles,four_candles");
             var httpContent = new FormUrlEncodedContent(config);
-
 
             var response = await client.PostAsync("https://localhost:8691/connect/token", httpContent);
 

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -50,6 +53,41 @@ namespace MVC_App.Siccar
             }
             return response.Content.ReadAsStringAsync().Result;
 
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<string> extendTokenAttestation(string idToken)
+        {
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
+
+            var config = new Dictionary<string, string>();
+            config.Add("client_id", "thirty-third-council");
+            config.Add("grant_type", "wallettoattestations");
+            config.Add("token", idToken);
+            config.Add("scopes", "field_attestation,has_blue_badge,fork_handles,four_candles");
+            var httpContent = new FormUrlEncodedContent(config);
+
+            var response = await _client.PostAsync("https://localhost:8691/connect/token", httpContent);
+
+            return response.Content.ReadAsStringAsync().Result;
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<string> extendTokenClaims(string idToken)
+        {
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
+            var config = new Dictionary<string, string>();
+            config.Add("client_id", "thirty-third-council");
+            config.Add("grant_type", "wallettoclaims");
+            config.Add("token", idToken);
+            config.Add("scopes", "field_name,pet_name,first_name,last_name,date_of_birth");
+            var httpContent = new FormUrlEncodedContent(config);
+
+            var response = await _client.PostAsync("https://localhost:8691/connect/token", httpContent);
+
+            return response.Content.ReadAsStringAsync().Result;
         }
     }
 }

@@ -6,7 +6,9 @@
 
 @{
     var fields = Model.fields.target;
-    var lastComment = Model.receivedComments.Count >= 0 ? Model.receivedComments[0] : "";
+
+
+    var lastComment = Model.comments.Count > 0 ? Model.comments[Model.comments.Count-1].commentText : "";
 
     var guidanceNotes = Model.summary.guidanceNotes.Count > 0 ? Model.summary.guidanceNotes[0].display : "";
 }

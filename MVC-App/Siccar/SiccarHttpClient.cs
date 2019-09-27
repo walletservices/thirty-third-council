@@ -68,7 +68,7 @@ namespace MVC_App.Siccar
             config.Add("scopes", "field_attestation,has_blue_badge,fork_handles,four_candles");
             var httpContent = new FormUrlEncodedContent(config);
 
-            var response = await _client.PostAsync("https://localhost:8691/connect/token", httpContent);
+            var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
 
             return response.Content.ReadAsStringAsync().Result;
         }
@@ -85,7 +85,7 @@ namespace MVC_App.Siccar
             config.Add("scopes", "field_name,pet_name,first_name,last_name,date_of_birth");
             var httpContent = new FormUrlEncodedContent(config);
 
-            var response = await _client.PostAsync("https://localhost:8691/connect/token", httpContent);
+            var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
 
             return response.Content.ReadAsStringAsync().Result;
         }

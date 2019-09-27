@@ -11,6 +11,8 @@ using System.Data;
 using System.ComponentModel;
 using static MVC_App.ProcessModel;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 
 namespace MVC_App
 {
@@ -67,9 +69,8 @@ namespace MVC_App
         [Authorize]
         public async Task<IActionResult> StartProcessA()
         {
+           
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
-            HttpContext.Session.SetString("attestationToken", attestationToken);
             var content = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
             dynamic model = JsonConvert.DeserializeObject(content);
             
@@ -81,9 +82,8 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessB()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
-            HttpContext.Session.SetString("attestationToken", attestationToken);
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken);
+            var attestationToken = await _siccarHttpClient.extendTokenClaims(idToken);
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken, attestationToken);
             dynamic model = JsonConvert.DeserializeObject(content);
 
             ViewData["Payload"] = content;
@@ -95,9 +95,9 @@ namespace MVC_App
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
             var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
-            HttpContext.Session.SetString("attestationToken", attestationToken);
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken);
+            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken, attestationToken);
             dynamic model = JsonConvert.DeserializeObject(content);
+
             ViewData["Payload"] = content;
             return View("Api", model);
         }

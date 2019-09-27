@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MVC_App.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +35,7 @@ namespace MVC_App.Siccar
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
             var response = await _client.GetAsync(new Uri(url));
-            while(response.StatusCode == System.Net.HttpStatusCode.Accepted)
+            while (response.StatusCode == System.Net.HttpStatusCode.Accepted)
             {
                 Thread.Sleep(10);
                 response = await _client.GetAsync(new Uri(url));
@@ -45,15 +47,27 @@ namespace MVC_App.Siccar
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
-
             var response = await _client.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json"));
             if (ensureResponseIsValid)
             {
                 response.EnsureSuccessStatusCode();
             }
             return response.Content.ReadAsStringAsync().Result;
-
         }
+
+        public async Task<string> Post(string url, string idToken, string content, string token = null)
+        {
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
+            if (token != null)
+            {
+                _client.DefaultRequestHeaders.Add("X-Siccar-Authorization", token);
+            }
+            var response = await _client.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadAsStringAsync().Result;
+        }
+
         [Authorize]
         [HttpPost]
         public async Task<string> extendTokenAttestation(string idToken)
@@ -69,9 +83,10 @@ namespace MVC_App.Siccar
             var httpContent = new FormUrlEncodedContent(config);
 
             var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
-
-            return response.Content.ReadAsStringAsync().Result;
+            var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
+            return dynamicResponse.access_token;
         }
+
         [Authorize]
         [HttpPost]
         public async Task<string> extendTokenClaims(string idToken)
@@ -86,8 +101,8 @@ namespace MVC_App.Siccar
             var httpContent = new FormUrlEncodedContent(config);
 
             var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
-
-            return response.Content.ReadAsStringAsync().Result;
+            var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
+            return dynamicResponse.access_token;
         }
     }
 }

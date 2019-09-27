@@ -79,7 +79,7 @@ namespace MVC_App.Siccar
             config.Add("client_id", "thirty-third-council");
             config.Add("grant_type", "wallettoattestations");
             config.Add("token", idToken);
-            config.Add("scopes", "field_attestation,has_blue_badge,fork_handles,four_candles");
+            config.Add("scopes", "new_publishable_attestation");
             var httpContent = new FormUrlEncodedContent(config);
 
             var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);

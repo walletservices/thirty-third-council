@@ -7,7 +7,7 @@ namespace MVC_App
 {
     public interface ISiccarConnector
     {
-        Task<string> GetStepNextOrStartProcess(string processid, string version, string idToken);
+        Task<string> GetStepNextOrStartProcess(string processid, string version, string idToken, string secondaryToken = null);
 
         Task<string> GetProgressReport(string idToken);
 

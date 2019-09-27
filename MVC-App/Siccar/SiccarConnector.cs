@@ -21,18 +21,18 @@ namespace MVC_App
             return await _client.Get(_config.GetGetProgressReports, idToken);
         }
 
-        public async Task<string> GetStepNextOrStartProcess(string schemaId, string schemaVersionId, string idToken)
+        public async Task<string> GetStepNextOrStartProcess(string schemaId, string schemaVersionId, string idToken, string attestationToken = null)
         {
             var actionsToExecute = await _client.Get(_config.GetGetActionToLoad, idToken);
             if (actionsToExecute.Equals("[]"))
             {
-                await _client.Post(_config.PostStartProcess, idToken, JsonConvert.SerializeObject(new { schemaId, schemaVersionId } as dynamic));
+                await _client.Post(_config.PostStartProcess, idToken, JsonConvert.SerializeObject(new { schemaId, schemaVersionId } as dynamic), attestationToken);
                 actionsToExecute = await _client.Poll(_config.GetCheckifActionIsStartable, idToken);
             }
             var action = FindActionFromResponse(actionsToExecute, schemaId, schemaVersionId);
             if (action == "-1")
             {
-                await _client.Post(_config.PostStartProcess, idToken, JsonConvert.SerializeObject(new { schemaId, schemaVersionId } as dynamic));
+                await _client.Post(_config.PostStartProcess, idToken, JsonConvert.SerializeObject(new { schemaId, schemaVersionId } as dynamic), attestationToken);
                 actionsToExecute = await _client.Poll(_config.GetCheckifActionIsStartable, idToken);
             }
             return FindActionFromResponse(actionsToExecute, schemaId, schemaVersionId);
@@ -42,7 +42,7 @@ namespace MVC_App
         {
             var stringContent = JsonConvert.SerializeObject(content);
             var endpoint = _config.PostSubmitStep.Replace("{id}", stepId);
-            await _client.Post(endpoint, idToken, stringContent);
+            await _client.Post(endpoint, idToken, stringContent,true);
             return "done";
         }
 

@@ -36,7 +36,6 @@ namespace MVC_App
         public async Task<IActionResult> Progress()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var resp = "[{\"schemaId\":\"0410b038-6d50-4568-ae29-6b21eace1581\",\"schemaInstanceId\":\"b76583b9-2737-416c-abc6-47fed57c8dd2\",\"schemaTitle\":\"Simple Two Step Private Wallet \",\"stepStatuses\":[{\"stepIndex\":0,\"stepTitle\":\"Single User Wallet \",\"completionTime\":1563192239},{\"stepIndex\":1,\"stepTitle\":\"Please authorise \",\"completionTime\":1563192281}]},{\"schemaId\":\"0c189e4f-e1d2-440c-867b-115d211b458d\",\"schemaInstanceId\":\"76bb0153-aeb8-4a2c-a87b-b5f58ea056ca\",\"schemaTitle\":\"Process A for Phase  3\",\"stepStatuses\":[{\"stepIndex\":0,\"stepTitle\":\"Application Form for Blue Badge\",\"completionTime\":1569230795},{\"stepIndex\":1,\"stepTitle\":\"Validate\",\"completionTime\":1569251755},{\"stepIndex\":2,\"stepTitle\":\"Authorise\",\"completionTime\":null}]},{\"schemaId\":\"0c189e4f-e1d2-440c-867b-115d211b458d\",\"schemaInstanceId\":\"dfe02c3a-8d64-4879-a9b5-c02f89cecd8b\",\"schemaTitle\":\"Process A for Phase  3\",\"stepStatuses\":[{\"stepIndex\":0,\"stepTitle\":\"Application Form for Blue Badge\",\"completionTime\":1569240435},{\"stepIndex\":1,\"stepTitle\":\"Validate\",\"completionTime\":1569251708},{\"stepIndex\":2,\"stepTitle\":\"Authorise\",\"completionTime\":null}]},{\"schemaId\":\"0c189e4f-e1d2-440c-867b-115d211b458d\",\"schemaInstanceId\":\"e98769ec-7cf5-4055-b1b0-4c22697808df\",\"schemaTitle\":\"Process A for Phase  3\",\"stepStatuses\":[{\"stepIndex\":0,\"stepTitle\":\"Application Form for Blue Badge\",\"completionTime\":1569243932},{\"stepIndex\":1,\"stepTitle\":\"Validate\",\"completionTime\":1569251668},{\"stepIndex\":2,\"stepTitle\":\"Authorise\",\"completionTime\":null}]},{\"schemaId\":\"0c189e4f-e1d2-440c-867b-115d211b458d\",\"schemaInstanceId\":\"a27a2f1f-66b2-4af2-b583-19684d5b34d4\",\"schemaTitle\":\"Process A for Phase  3\",\"stepStatuses\":[{\"stepIndex\":0,\"stepTitle\":\"Application Form for Blue Badge\",\"completionTime\":1569245952},{\"stepIndex\":1,\"stepTitle\":\"Validate\",\"completionTime\":1569246121},{\"stepIndex\":2,\"stepTitle\":\"Authorise\",\"completionTime\":null}]}]";
             var response = await _connector.GetProgressReport(idToken);
             
             JArray jsonObject = JArray.Parse(response);
@@ -106,7 +105,7 @@ namespace MVC_App
         [HttpPost]
         public async Task<IActionResult> SubmitAction(Dictionary<string, string> parameters)
         {
-            var actorId = HttpContext.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            var stepComment = "";
 
             JArray fields = new JArray();
             foreach (var pair in parameters)
@@ -122,7 +121,7 @@ namespace MVC_App
                 }
             }
 
-            dynamic post = new { actorId, fields };
+            dynamic post = new { stepComment, fields };
 
             var idToken = HttpContext.User.FindFirst("id_token").Value;
             await _connector.SubmitStep(post, idToken, parameters["previousStepId"]);

@@ -25,7 +25,7 @@ namespace MVC_App
             foreach (var d in data.Reverse())
             {
                 var status = d.completionTime == null ? "To Do" : "Completed";
-                if (d.stepIndex == firstNull)
+                if (d.completionTime == firstNull)
                 {
                     status = "In Progress";    
                 }

@@ -49,6 +49,7 @@ namespace MVC_App
             })
             .AddJwtBearer().AddCookie();
             services.AddNodeServices();
+
             
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
@@ -88,6 +89,12 @@ namespace MVC_App
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://localhost:5001/",
+                                    "https://localhost:8691/",
+                                    "https://localhost:5001/");
+            });
             app.UseAuthentication();
             app.UseSession();
             app.UseStaticFiles();

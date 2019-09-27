@@ -82,19 +82,21 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessB()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
+            var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
+            HttpContext.Session.SetString("attestationToken", attestationToken);
             var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken);
             dynamic model = JsonConvert.DeserializeObject(content);
 
-
             ViewData["Payload"] = content;
             return View("Api", model);
-
         }
 
         [Authorize]
         public async Task<IActionResult> StartProcessC()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
+            var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
+            HttpContext.Session.SetString("attestationToken", attestationToken);
             var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken);
             dynamic model = JsonConvert.DeserializeObject(content);
             ViewData["Payload"] = content;

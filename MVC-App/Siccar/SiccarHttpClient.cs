@@ -81,6 +81,7 @@ namespace MVC_App.Siccar
             var httpContent = new FormUrlEncodedContent(config);
 
             var response = await _client.PostAsync(url, httpContent);
+            response.EnsureSuccessStatusCode();
             var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
             return dynamicResponse.access_token;
         }
@@ -97,6 +98,7 @@ namespace MVC_App.Siccar
             var httpContent = new FormUrlEncodedContent(config);
 
             var response = await _client.PostAsync(url, httpContent);
+            response.EnsureSuccessStatusCode();
             var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
             return dynamicResponse.access_token;
         }

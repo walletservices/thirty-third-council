@@ -90,17 +90,17 @@ As the 33rd council is redirected to from the Siccar B2C; if the URL is changed 
 
 #### Starting The First Process
 The first process directly calls Siccar and starts a process without extra information.  
-![Twat](https://i.guim.co.uk/img/media/9b1fe28fc874386c2353c58485ebea3a62bf21f8/164_345_4889_2933/master/4889.jpg?width=620&quality=45&auto=format&fit=max&dpr=2&s=1bfbf7b2fca633d0a1185d6679a927f0)
+![Starting Process A](StartProcessA.png)
 
 The above sequence diagram demonstrates the interactions between the logged in user, the app and Siccar.
 
 #### Starting Process B 
 The second process is started via the STS.  The STS interrogates the users wallet for the claims (which are provided in the app settings of the app) and then redirects to Siccar passing the returned claims  via a secondary JWT token.  These extra claims are then added to the ledger when starting the process and then returned to the user for confirmation. 
-![Twat](https://i.guim.co.uk/img/media/9b1fe28fc874386c2353c58485ebea3a62bf21f8/164_345_4889_2933/master/4889.jpg?width=620&quality=45&auto=format&fit=max&dpr=2&s=1bfbf7b2fca633d0a1185d6679a927f0)
+![Starting Process B](StartProcessB.png)
 
 #### Starting Process C
 The third process is started via the STS.  The STS interrogates the users wallet for the attestations (which are provided in the app settings of the app) and then redirects to Siccar passing the returned attestations via a secondary JWT token.  These extra attestations are then added to the ledger when starting the process.  They are not returned to the user. 
-![Twat](https://i.guim.co.uk/img/media/9b1fe28fc874386c2353c58485ebea3a62bf21f8/164_345_4889_2933/master/4889.jpg?width=620&quality=45&auto=format&fit=max&dpr=2&s=1bfbf7b2fca633d0a1185d6679a927f0)
+![Starting Process C](StartProcessC.png)
 
 #### Core differences between the STS call for claims and attestations
 The claims call is initiated with the following parameters.

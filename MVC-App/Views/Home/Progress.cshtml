@@ -8,11 +8,11 @@
 
 
 @ViewData["Progress"]
-<h2>Progress</h2>
 
 @foreach (var table in Model)
 {
     <br />
+    <h3>@table.TableName</h3>
     <table class="table table-hover">
         <thead>
             <tr>

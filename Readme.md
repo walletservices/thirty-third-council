@@ -127,7 +127,7 @@ scopes: <Scopes from App Settings> ... ExpectedAttestations
 ````
 
 #### Interesting URLS 
-33rd Council : 
+* 33rd Council : https://thirdythirdcouncil.azurewebsites.net/ 
 * Designer: https://dev.design.pds-poc.test.myaccount.scot/
 * Agent Executor: https://dev.agent.pds-poc.test.myaccount.scot/
 * Citizen Executor: https://dev.citizen.pds-poc.test.myaccount.scot/

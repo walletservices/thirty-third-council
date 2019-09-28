@@ -82,7 +82,7 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessB()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.extendTokenClaims(idToken);
+            var attestationToken = await _siccarHttpClient.ExtendTokenClaims(_config.TokenEndpoint, idToken, _config.ExpectedClaims);
             var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken, attestationToken);
             dynamic model = JsonConvert.DeserializeObject(content);
 
@@ -94,7 +94,7 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessC()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.extendTokenAttestation(idToken);
+            var attestationToken = await _siccarHttpClient.ExtendTokenAttestation(_config.TokenEndpoint, idToken, _config.ExpectedAttestations);
             var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken, attestationToken);
             dynamic model = JsonConvert.DeserializeObject(content);
 

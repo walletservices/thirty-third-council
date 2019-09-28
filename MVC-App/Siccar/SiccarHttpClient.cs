@@ -68,9 +68,7 @@ namespace MVC_App.Siccar
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        [Authorize]
-        [HttpPost]
-        public async Task<string> extendTokenAttestation(string idToken)
+        public async Task<string> ExtendTokenAttestation(string url, string idToken, string attestations)
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
@@ -79,17 +77,15 @@ namespace MVC_App.Siccar
             config.Add("client_id", "thirty-third-council");
             config.Add("grant_type", "wallettoattestations");
             config.Add("token", idToken);
-            config.Add("scopes", "new_publishable_attestation");
+            config.Add("scopes", attestations);
             var httpContent = new FormUrlEncodedContent(config);
 
-            var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
+            var response = await _client.PostAsync(url, httpContent);
             var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
             return dynamicResponse.access_token;
         }
 
-        [Authorize]
-        [HttpPost]
-        public async Task<string> extendTokenClaims(string idToken)
+        public async Task<string> ExtendTokenClaims(string url, string idToken, string claims)
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
@@ -97,12 +93,13 @@ namespace MVC_App.Siccar
             config.Add("client_id", "thirty-third-council");
             config.Add("grant_type", "wallettoclaims");
             config.Add("token", idToken);
-            config.Add("scopes", "field_name,pet_name,first_name,last_name,date_of_birth");
+            config.Add("scopes", claims);
             var httpContent = new FormUrlEncodedContent(config);
 
-            var response = await _client.PostAsync("https://poc.dlt.test.myaccount.scot:8691/connect/token", httpContent);
+            var response = await _client.PostAsync(url, httpContent);
             var dynamicResponse = JsonConvert.DeserializeObject<JsonResponse>(await response.Content.ReadAsStringAsync());
             return dynamicResponse.access_token;
         }
+
     }
 }

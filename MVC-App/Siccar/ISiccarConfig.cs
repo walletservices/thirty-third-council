@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace MVC_App.Siccar
 {
     public interface ISiccarConfig
@@ -19,5 +15,8 @@ namespace MVC_App.Siccar
         string PostStartProcess { get; set; }
         string PostSubmitStep { get; set; }
         string GetGetProgressReports { get; set; }
+        string TokenEndpoint { get; set; }
+        string ExpectedClaims { get; set; }
+        string ExpectedAttestations { get; set; }
     }
 }

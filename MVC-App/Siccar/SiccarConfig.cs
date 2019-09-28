@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace MVC_App.Siccar
 {
     public class SiccarConfig : ISiccarConfig
@@ -19,5 +15,8 @@ namespace MVC_App.Siccar
         public string ProcessAVersion { get; set; }
         public string ProcessBVersion { get; set; }
         public string ProcessCVersion { get; set; }
+        public string TokenEndpoint { get; set; }
+        public string ExpectedClaims { get; set; }
+        public string ExpectedAttestations { get; set; }
     }
 }

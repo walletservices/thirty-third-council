@@ -11,7 +11,7 @@ namespace MVC_App.Siccar
 
         Task<string> Post(string url, string idToken, string content, bool ensureResponseIsValid = true);
         Task<string> Post(string url, string idToken, string content, string token = null);
-        Task<string> extendTokenAttestation(string token);
-        Task<string> extendTokenClaims(string token);
+        Task<string> ExtendTokenAttestation(string url, string token, string attestations);
+        Task<string> ExtendTokenClaims(string url, string token, string claims);
     }
 }

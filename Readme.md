@@ -128,10 +128,10 @@ scopes: <Scopes from App Settings> ... ExpectedAttestations
 
 #### Interesting URLS 
 33rd Council : 
-Designer: https://dev.design.pds-poc.test.myaccount.scot/
-Agent Executor: https://dev.agent.pds-poc.test.myaccount.scot/
-Citizen Executor: https://dev.citizen.pds-poc.test.myaccount.scot/
-Siccar Swagger: https://poc.dlt.test.myaccount.scot/swagger/index.html
+* Designer: https://dev.design.pds-poc.test.myaccount.scot/
+* Agent Executor: https://dev.agent.pds-poc.test.myaccount.scot/
+* Citizen Executor: https://dev.citizen.pds-poc.test.myaccount.scot/
+* Siccar Swagger: https://poc.dlt.test.myaccount.scot/swagger/index.html
 
 
 #### Issues

@@ -126,15 +126,44 @@ token: <JWT token from Siccar>
 scopes: <Scopes from App Settings> ... ExpectedAttestations
 ````
 
-#### Interesting URLS 
+#### System URLS 
 * 33rd Council : https://thirdythirdcouncil.azurewebsites.net/ 
 * Designer: https://dev.design.pds-poc.test.myaccount.scot/
 * Agent Executor: https://dev.agent.pds-poc.test.myaccount.scot/
 * Citizen Executor: https://dev.citizen.pds-poc.test.myaccount.scot/
 * Siccar Swagger: https://poc.dlt.test.myaccount.scot/swagger/index.html
 
+#### Updating Config ina deployed instance 
+It is possible to update the config of the POC web app without redeploying the code.  
+The use cases for that are the following
+* Changing redirect url for POC app 
+* Changing version or process id (or both)
+
+To do this 
+navigate to one of the websites above
+https://thirdythirdcouncil.azurewebsites.net
+Then add .scm before the azurewebsites.net 
+https://thirdythirdcouncil.scm.azurewebsites.net
+This will ask you to log in; you must have the correct permissions to log into the app.
+After logging in 
+Click debug at the top and select powershell
+After the page loads navigate to /site/wwwroot/
+Click appsettings.json and this can now be directed modified. 
+
+#### Deploying the app 
+Deployment can be done from any devs machine if they access to the subscription.
+* Load Visual Studio solution
+* Right Click on project 
+* Click Publish
+* Choose subscription (you must have the correct rights)
+* Find the existing app plan (or create another) 
+  * The existing app is deployed to 
+  * Subscription: a65cdfe5-a07c-4566-be03-1c4ca7ec8a66
+  * Resource group: thirtythirdcouncil
+  * thirdythirdcouncil app 
 
 #### Issues
 * Due to the nature of the POC the system currently does not log the user out of the 33rd council if their token expires. 
 * It also does not update the token which means the session can only last for an hour. 
-* Process B and C cannot be started via the client executor.   
+* Process B and C cannot be started via the client executor. 
+* Signing up to myaccount via the sign up link does not provide a smooth interface.  Not sure this is POC related.

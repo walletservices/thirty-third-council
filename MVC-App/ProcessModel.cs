@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace MVC_App
 {
@@ -12,14 +8,24 @@ namespace MVC_App
     {
         public class ProcessSchema
         {
-            [JsonProperty("schemaId")]
+            [JsonProperty("schema")]
+            public dynamic schema { get; set; }
             public string schemaId { get; set; }
-            [JsonProperty("schemaInstanceId")]
+            [JsonProperty("processInstanceId")]
             public string schemaInstanceId { get; set; }
-            [JsonProperty("schemaTitle")]
             public string schemaTitle { get; set; }
             [JsonProperty("stepStatuses")]
             public List<StepStatus> stepStatuses { get; set; }
+
+            [OnDeserialized]
+            internal void OnDeserializedMethod(StreamingContext context)
+            {
+                if (schema != null)
+                {
+                    schemaId = schema.id;
+                    schemaTitle = schema.title;
+                }
+            }
         }
         public class StepStatus
         {

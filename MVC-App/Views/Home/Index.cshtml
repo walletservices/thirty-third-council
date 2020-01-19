@@ -1,31 +1,30 @@
 ﻿@using Microsoft.AspNetCore.Authentication
-@model IndexModel
 @{
-    ViewData["Title"] = "IS Claims and Attestations";
+    ViewData["Title"] = "Home Page";
+
 }
+<div class="ui container">
+    <div class="ui segment">
+        <div class="ui segment">
+            <h3 class="ui header">Welcome to the thirty third council website.</h3>
 
-@if(User.Identity.IsAuthenticated)
-{
-<input id="access_token" type="hidden" value="@ViewContext.HttpContext.GetTokenAsync(".AspNetCore.Cookies").Result" />
-}
-<div class="text-center">
-    <h1 class="display-4">Welcome  @User.Identity.Name</h1>
-</div>
-
-<div class="card-group">
-    <div class="card-body "><a asp-controller="Home" asp-action="StartProcessA">Apply for a Blue Badge</a></div>
-</div>
-<p />
-<div class="card-header ">
-
-    <div class="card-group">
-        <div class="card-body col-lg-12 "><a asp-controller="Home" asp-action="StartProcessB">Apply for a NIC card via Claims</a></div>
+        </div>
+        <p></p>
+        <div class="ui segment">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+        </div>
+        <p></p>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="ui segment">
+                Please
+            </div>
+        }
+        else
+        {
+            <div class="ui segment">
+                <a class="item menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Processes"><i class="icon clone outline popup" data-html="Click to apply for services"></i>Click here to log in and apply for services</a>
+            </div>
+        }
     </div>
-
-    <div class="card-group">
-        <div class="card-body col-lg-12 "><a asp-controller="Home" asp-action="StartProcessC">Apply for a NIC card via Attestations</a></div>
-    </div>
 </div>
-
-
-

@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MVC_App
 {
-    public class IndexModel : PageModel
+    public class IndexModelPageModel
     {
         public void OnGet()
         {
-
         }
     }
 }

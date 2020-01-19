@@ -1,0 +1,9 @@
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
+@{
+    ViewData["Title"] = "Please Build your Processes";
+    var model = Model;
+
+    <partial name="RenderDisabledStartButton" , model="@Model" />
+    <partial name="RenderAttestationsStartButton" , model="@Model" />
+    <partial name="RenderNoProcessesToStart" , model="@Model" />
+}

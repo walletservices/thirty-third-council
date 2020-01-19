@@ -1,0 +1,28 @@
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
+@{
+    if (Model != null)
+    {
+
+        if (Model.ProcessResponses.Count == 0)
+        {
+        }
+        else
+        {
+            var process1 = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS);
+            var process2 = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS);
+
+            if (process1 != null)
+            {
+                if (process1.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+                {
+                    if (process2 != null && (process2.ProcessStatus == Cache.ProcessStatus.COMPLETED || process2.ProcessStatus == Cache.ProcessStatus.IN_PROGRESS))
+                    {
+                        <div class="ui segment">
+                            <div class="ui header medium">There are no processes to start at this time.</div>
+                        </div>
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MVC_App.Siccar
 {
@@ -13,5 +15,7 @@ namespace MVC_App.Siccar
         Task<string> Post(string url, string idToken, string content, string token = null);
         Task<string> ExtendTokenAttestation(string url, string token, string attestations);
         Task<string> ExtendTokenClaims(string url, string token, string claims);
+        Task<FileContentResult> GetDocument(string url, string idToken, bool ensureResponseIsValid = true);
+
     }
 }

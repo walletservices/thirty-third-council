@@ -18,5 +18,9 @@ namespace MVC_App.Siccar
         public string TokenEndpoint { get; set; }
         public string ExpectedClaims { get; set; }
         public string ExpectedAttestations { get; set; }
+
+        public string GetTransaction { get; set; }
+        public string GetDocumentTransaction { get; set; }
+
     }
 }

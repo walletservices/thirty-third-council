@@ -1,0 +1,17 @@
+﻿@model MVC_App.Models.ProgressReport
+<div class="ui segment">
+    <div class="ui tiny header ">Process @Model.Title Status</div>
+    <div class="ui steps">
+        @foreach (var step in Model.Steps)
+        {
+            <div class="@step.Class step">
+                <i class="@step.Icon"></i>
+                <div class="content">
+                    <div class="title">@step.Title</div>
+                    <div class="description">@step.Status</div>
+                    <div class="description">@step.CompletionTime</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

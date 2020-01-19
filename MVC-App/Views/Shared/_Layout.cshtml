@@ -3,73 +3,255 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MVC_App</title>
+    <title>@ViewData["Title"] - Process Designers APp</title>
 
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
-              crossorigin="anonymous"
-              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
-    </environment>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="  crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="~/lib/semantic-ui/dist/semantic.min.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/semantic-ui/dist/semantic.js"></script>
+    <link rel="stylesheet" href="~/css/badges.css" />
+
+    <script>
+        $(document)
+            .ready(function () {
+
+                // fix menu when passed
+                $('.topmenu')
+                    .visibility({
+                        once: false,
+                        onBottomPassed: function () {
+                            $('.fixed.menu').transition('fade in');
+                        },
+                        onBottomPassedReverse: function () {
+                            $('.fixed.menu').transition('fade out');
+                        }
+                    })
+                    ;
+
+                // create sidebar and attach to menu open
+                $('.ui.sidebar')
+                    .sidebar('attach events', '.toc.item')
+                    ;
+
+
+                $(function () {
+                    $('.popup').popup();
+                });
+
+
+                $('.ui.dropdown')
+                    .dropdown()
+                    ;
+
+
+            })
+            ;
+    </script>
+
+    <style type="text/css">
+
+        .hidden.menu {
+            display: none;
+        }
+
+        .masthead.segment {
+            min-height: 700px;
+            padding: 1em 0em;
+        }
+
+        .masthead .logo.item img {
+            margin-right: 1em;
+        }
+
+        .masthead .ui.menu .ui.button {
+            margin-left: 0.5em;
+        }
+
+        .masthead h1.ui.header {
+            margin-top: 3em;
+            margin-bottom: 0em;
+            font-size: 4em;
+            font-weight: normal;
+        }
+
+        .masthead h2 {
+            font-size: 1.7em;
+            font-weight: normal;
+        }
+
+        .ui.vertical.stripe {
+            padding: 8em 0em;
+        }
+
+            .ui.vertical.stripe h3 {
+                font-size: 2em;
+            }
+
+            .ui.vertical.stripe .button + h3,
+            .ui.vertical.stripe p + h3 {
+                margin-top: 3em;
+            }
+
+            .ui.vertical.stripe .floated.image {
+                clear: both;
+            }
+
+            .ui.vertical.stripe p {
+                font-size: 1.33em;
+            }
+
+            .ui.vertical.stripe .horizontal.divider {
+                margin: 3em 0em;
+            }
+
+        .quote.stripe.segment {
+            padding: 0em;
+        }
+
+            .quote.stripe.segment .grid .column {
+                padding-top: 5em;
+                padding-bottom: 5em;
+            }
+
+        .footer.segment {
+            padding: 5em 0em;
+        }
+
+        .secondary.pointing.menu .toc.item {
+            display: none;
+        }
+
+        @@media only screen and (max-width: 700px) {
+            .ui.fixed.menu {
+                display: none !important;
+            }
+
+            .secondary.pointing.menu .item,
+            .secondary.pointing.menu .menu {
+                display: none;
+            }
+
+            .secondary.pointing.menu .toc.item {
+                display: block;
+            }
+
+            .masthead.segment {
+                min-height: 350px;
+            }
+
+            .masthead h1.ui.header {
+                font-size: 2em;
+                margin-top: 1.5em;
+            }
+
+            .masthead h2 {
+                margin-top: 0.5em;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVC_App</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home    </a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="Progress">Progress    </a></li>
-                    </ul>
-                    @await Html.PartialAsync("_LoginPartial")
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+<body class="pushable">
+    <div class="ui small secondary top fixed hidden menu inverted center aligned segment">
+        <div class="ui container">
+            <img class="ui small image item left" src="~/images/siccar_logo.png">
+
+            <a class="item home menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Index"><i class="icon home popup" data-html="Click to go Home"></i></a>
+            <a class="item manageme menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Progress"><i class="icon cogs popup" data-html="Click to see Progress of processes"></i></a>
+            <a class="item menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Processes"><i class="icon play popup" data-html="Click to apply for services"></i></a>
+            <a class="item menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Cards"><i class="icon comments outline popup" data-html="Click to view your entitlement cards"></i></a>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="item right initiateFade" asp-area="">Hello @User.Identity.Name</a>
+                <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="SignOut">Sign out</a>
+            }
+            else
+            {
+                <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="SignIn">Sign In</a>
+                <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="ResetPassword">Reset Password</a>
+            }
+
+        </div>
+    </div>
+    <!-- Sidebar Menu -->
+    <div class="ui vertical inverted sidebar menu left" style="">
+        <a class="item initiateFade" asp-area="" asp-controller="Home" asp-action="Index">Home</i></a>
+        <a class="item initiateFade" asp-area="" asp-controller="Home" asp-action="Progress">View Progress</a>
+        <a class="item initiateFade" asp-area="" asp-controller="Home" asp-action="Processes">Apply for Services</a>
+        <a class="item initiateFade" asp-area="" asp-controller="Home" asp-action="Cards">View Digital Cards</a>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a class="item initiateFade" asp-area="" asp-controller="Session" asp-action="SignOut">Sign out</a>
+        }
+        else
+        {
+            <a class="item initiateFade" asp-area="" asp-controller="Session" asp-action="SignIn">Sign In</a>
+            <a class="item initiateFade" asp-area="" asp-controller="Session" asp-action="ResetPassword">Reset Password</a>
+        }
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2019 - MVC_App - <a asp-area="" asp-page="/Privacy">Privacy</a>
+
+    <!-- Page Contents -->
+    <div class="pusher">
+        <div class="ui inverted vertical  center aligned segment">
+
+            <div class="ui container">
+                <div class="ui small secondary inverted pointing menu topmenu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <img class="ui small image item left" src="~/images/siccar_logo.png">
+
+                    <a class="item home menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Index"><i class="icon home popup" data-html="Click to go Home"></i></a>
+                    <a class="item  menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Progress"><i class="icon cogs popup" data-html="Click to see Progress of processes"></i></a>
+                    <a class="item  menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Processes"><i class="icon play popup" data-html="Click to apply for services"></i></a>
+                    <a class="item menuitem initiateFade" asp-area="" asp-controller="Home" asp-action="Cards"><i class="icon comments outline popup" data-html="Click to view your entitlement cards"></i></a>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="item right initiateFade" asp-area="">Hello @User.Identity.Name</a>
+                        <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="SignOut">Sign out</a>
+                    }
+                    else
+                    {
+                        <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="SignIn">Sign In</a>
+                        <a class="item right initiateFade" asp-area="" asp-controller="Session" asp-action="ResetPassword">Reset Password</a>
+                    }
+                </div>
+            </div>
+
+
         </div>
-    </footer>
 
-    <environment include="Development">
+        <div class="ui page dimmer">
+            
+            <div class="ui loader" style="width:50%">
+                <div class="ui header inverted" style="padding-top:2em">Please wait, we are processing your request</div>
+            </div>
+        </div>
+
+        <div class="ui container">
+            @RenderBody()
+        </div>
+
+
+
         <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
-        </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
-        </script>
-    </environment>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/lib/semantic-ui/dist/semantic.js"></script>
 
-    @RenderSection("Scripts", required: false)
+        @RenderSection("Scripts", required: false)
+
+        <script>
+            $(document)
+                .ready(function () {
+                    $(".initiateFade").click(function () { $('.dimmer').dimmer('show'); })
+                });
+        </script>
+        <footer>
+            <p>&copy; 2019 - Siccar</p>
+        </footer>
+
 </body>
 </html>

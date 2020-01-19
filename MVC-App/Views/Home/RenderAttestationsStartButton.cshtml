@@ -1,0 +1,38 @@
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
+@{
+    if (Model != null)
+    {
+        if (Model.ProcessResponses.Count == 0)
+        {
+        }
+        else
+        {
+            var preRequisiteProcess = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS);
+            if (preRequisiteProcess.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+            {
+                var process = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS);
+                if (process == null ||
+                    process.ProcessStatus == Cache.ProcessStatus.TO_BE_IMPLEMENTED_ACTION_WITH_USER ||
+                    process.ProcessStatus == Cache.ProcessStatus.NOT_STARTED
+                    )
+                {
+                    <div class="ui segment">
+                        <a asp-controller="Home" asp-action="StartProcessC" class="initiateFade">
+                            <div class="ui animated fade button large fluid green " tabindex="0">
+                                <div class="visible content"><i class="align left icon"></i>Apply for a National Entitlement Card card via Attestations</div>
+                                <div class="hidden content">
+                                    This process will reuse the attestations provided by the blue badge process to streamline the process of applying for a NEC
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+                else if (process != null && process.ProcessStatus == Cache.ProcessStatus.IN_PROGRESS)
+                {
+                    <div class="ui header small">Your National Entitlement card application is being processed.</div>
+                    <partial name="RenderProgressReport" , model="@Model.ProgressReports.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS)" />
+                }
+            }
+        }
+    }
+}

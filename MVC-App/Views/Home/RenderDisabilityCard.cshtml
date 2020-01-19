@@ -1,0 +1,42 @@
+﻿@model MVC_App.Models.SiccarStatusCacheProcessResponse
+<div class="ui segment ">
+    <div class="ui raised card bluebadgebackground ">
+        <div class="content bluebadgecardheader">
+            <div class="header bluebadge bluebadgeheader">
+                Blue Badge
+                <img class="ui small right floated image" src="~/images/euu-image.PNG" />
+                <img class="ui small left floated image" src="~/images/blue-badge.png" />
+            </div>
+        </div>
+        <div class="content bluebadgecardcontent">
+            <h4 class="ui sub header"></h4>
+            <div class="ui tiny feed">
+                @foreach (var kvp in Model.Attributes)
+                {
+                    <div class="event">
+                        <div class="content">
+                            <div class="ui labeled input">
+                                <div class="ui label">
+                                    @kvp.Key
+                                </div>
+                                @if (kvp.Value == "true")
+                                {
+                                    <img class="ui huge left floated image" src="~/images/tick.png" />
+                                }
+                                else if (kvp.Value.Contains("data:image"))
+                                {
+                                    <img src="@kvp.Value" />
+                                }
+                                else
+                                {
+                                    <input type="text" disabled value="@kvp.Value">
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                }                
+            </div>
+        </div>
+    </div>
+</div>

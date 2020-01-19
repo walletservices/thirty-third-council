@@ -1,0 +1,42 @@
+﻿.bluebadge {
+    color: #FFF!important;
+    background: #020D5C!important;
+}
+
+.bluebadgeheader {
+    padding-bottom: 6px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 4px;
+}
+
+
+.bluebadgebackground {
+    /*background-image: url('/images/bluebadge-background.png')!important;*/
+    opacity: 0.9;
+}
+
+
+.necbadge {
+    color: #FFF !important;
+    background: #020D5C !important;
+}
+
+.necbackground {
+    background-image: url('/images/nec.jpg') !important;
+    opacity: 0.9;
+}
+
+
+.bluebadgecardheader {
+    padding-top: 1em !important;
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+    padding-bottom: 0em !important;
+}
+
+.bluebadgecardcontent {
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+    padding-top: 0em !important;
+}

@@ -35,11 +35,11 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SDK\Siccar-CS-SDK\siccar-cache\siccar-cache.csproj" />
-    <ProjectReference Include="..\..\..\SDK\Siccar-CS-SDK\siccar-connector\siccar-connector.csproj" />
-    <ProjectReference Include="..\..\..\SDK\Siccar-CS-SDK\siccar-form-manager\siccar-form-manager.csproj" />
-    <ProjectReference Include="..\..\..\SDK\Siccar-CS-SDK\siccar-models\siccar-models.csproj" />
-    <ProjectReference Include="..\..\..\SDK\Siccar-CS-SDK\siccar-msal\siccar-msal.csproj" />
+    <ProjectReference Include="..\libraries\siccar-cache\siccar-cache.csproj" />
+    <ProjectReference Include="..\libraries\siccar-connector\siccar-connector.csproj" />
+    <ProjectReference Include="..\libraries\siccar-form-manager\siccar-form-manager.csproj" />
+    <ProjectReference Include="..\libraries\siccar-models\siccar-models.csproj" />
+    <ProjectReference Include="..\libraries\siccar-msal\siccar-msal.csproj" />
   </ItemGroup>
 
 </Project>

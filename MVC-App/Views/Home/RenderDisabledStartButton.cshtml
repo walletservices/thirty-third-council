@@ -1,4 +1,4 @@
-﻿@model MVC_App.Models.SiccarStatusCacheResponse
+﻿@model MVC_App.Models.SiccarStatusCacheResponseViewModel
 @{
     if (Model != null)
     {
@@ -19,7 +19,7 @@
         {
             var process1Status = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS).ProcessStatus;
 
-            if (process1Status == Cache.ProcessStatus.NOT_STARTED)
+            if (process1Status.ToString() == "NOT_STARTED")
             {
                 <div class="ui segment">
                     <a asp-controller="Home" asp-action="StartProcessA" class="initiateFade">
@@ -32,7 +32,7 @@
                     </a>
                 </div>
             }
-            else if (process1Status == Cache.ProcessStatus.TO_BE_IMPLEMENTED_ACTION_WITH_USER)
+            else if (process1Status.ToString() == "TO_BE_IMPLEMENTED_ACTION_WITH_USER")
             {
                 <div class="ui segment">
                     <a asp-controller="Home" asp-action="StartProcessA" class="initiateFade">
@@ -45,7 +45,7 @@
                     </a>
                 </div>
             }
-            else if (process1Status == Cache.ProcessStatus.IN_PROGRESS)
+            else if (process1Status.ToString() == "IN_PROGRESS")
             {
                 <div class="ui header small">Your Blue badge application is being processed.</div>
                 <partial name="RenderProgressReport" , model="@Model.ProgressReports.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS)" />

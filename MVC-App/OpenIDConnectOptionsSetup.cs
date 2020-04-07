@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
 using MVC_App.Siccar;
 using System.Linq;
+using Siccar.CacheManager;
 
 namespace MVC_App
 {

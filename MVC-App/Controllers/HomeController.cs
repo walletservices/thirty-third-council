@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Mvc;
 using MVC_App.Siccar;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using static MVC_App.ProcessModel;
-using MVC_App.Models;
 using System;
-using System.Net.Http.Headers;
 using System.IO;
 using System.Threading;
+using Siccar.Connector.Connector;
+using Siccar.Connector.Http;
+using Siccar.CacheManager;
+using Siccar.CacheManager.Models;
+using Siccar.Connector.STS;
+using Siccar.FormManager;
+using MVC_App.Models;
+using System.Collections.Generic;
 
 namespace MVC_App
 {
@@ -21,15 +24,19 @@ namespace MVC_App
     {
         ISiccarConnector _connector;
         ISiccarConfig _config;
-        ISiccarHttpClient _siccarHttpClient;
+        ISiccarSTSClient _siccarStsClient;
         ISiccarStatusCache _statusCache;
+        ISiccarEndpoints _siccarEndpoints;
+        ISiccarFormManager _siccarFormManager;
 
-        public HomeController(ISiccarConnector connector, ISiccarConfig config, ISiccarHttpClient httpClient, ISiccarStatusCache statusCache)
+        public HomeController(ISiccarConnector connector, ISiccarConfig config, ISiccarStatusCache statusCache, ISiccarSTSClient siccarStsClient, ISiccarEndpoints siccarEndpoints, ISiccarFormManager siccarFormManager)
         {
             _connector = connector;
             _config = config;
-            _siccarHttpClient = httpClient;
             _statusCache = statusCache;
+            _siccarStsClient = siccarStsClient;
+            _siccarEndpoints = siccarEndpoints;
+            _siccarFormManager = siccarFormManager;
         }
 
         [Authorize]
@@ -49,7 +56,7 @@ namespace MVC_App
             return View();
         }
 
-        private SiccarStatusCacheResponse BuildIndexModel()
+        private SiccarStatusCacheResponseViewModel BuildIndexModel()
         {
 
             var idToken = HttpContext.User.FindFirst("id_token").Value;
@@ -72,7 +79,7 @@ namespace MVC_App
                     }
                 }
                 var status = _statusCache.GetStatus(userId);
-                return status;
+                return new SiccarStatusCacheResponseViewModel(status);
             }
             catch (Exception)
             {
@@ -102,7 +109,7 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessA()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessA, _config.ProcessAVersion, idToken);
+            var content = await _connector.GetStepNextOrStartProcess(idToken, _config.ProcessA);
             dynamic model = JsonConvert.DeserializeObject(content);
             ViewData["Payload"] = content;
             return View("Api", model);
@@ -112,8 +119,8 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessB()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.ExtendTokenClaims(_config.TokenEndpoint, idToken, _config.ExpectedClaims);
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessB, _config.ProcessBVersion, idToken, attestationToken);
+            var claimToken = await _siccarStsClient.ExtendTokenClaims(_siccarEndpoints.TokenEndpoint, idToken, _config.ExpectedClaims);
+            var content = await _connector.GetStepNextOrStartProcess(idToken, _config.ProcessB, null, new List<string>() { claimToken });
             dynamic model = JsonConvert.DeserializeObject(content);
             ViewData["Payload"] = content;
             return View("Api", model);
@@ -123,69 +130,25 @@ namespace MVC_App
         public async Task<IActionResult> StartProcessC()
         {
             var idToken = HttpContext.User.FindFirst("id_token").Value;
-            var attestationToken = await _siccarHttpClient.ExtendTokenAttestation(_config.TokenEndpoint, idToken, _config.ExpectedAttestations);
-            var content = await _connector.GetStepNextOrStartProcess(_config.ProcessC, _config.ProcessCVersion, idToken, attestationToken);
+            var attestationToken = await _siccarStsClient.ExtendTokenAttestation(_siccarEndpoints.TokenEndpoint, idToken, _config.ExpectedAttestations);
+            var content = await _connector.GetStepNextOrStartProcess(idToken, _config.ProcessC, null, new List<string>() { attestationToken } );
             dynamic model = JsonConvert.DeserializeObject(content);
             ViewData["Payload"] = content;
             return View("Api", model);
         }
 
-        public JObject AddImageToSubmission(string id, string fileName, string mimetype, IFormFile file)
-        {
-            byte[] bytes;
-            using (var stream = file.OpenReadStream())
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    stream.CopyTo(memoryStream);
-                    bytes = memoryStream.ToArray();
-                }
-            }
-            JObject value = new JObject();
-            value.Add("Base64Data", bytes);
-            value.Add("FileName", fileName);
-            value.Add("MimeType", mimetype);
-
-            JObject fileUpload = new JObject();
-            fileUpload.Add("id", id);
-            fileUpload.Add("value", value.ToString());
-            return fileUpload;
-        }
-
-
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> SubmitAction(IFormCollection coll)
         {
-            var stepComment = "";
-            JArray fields = new JArray();
-            var schemaId = string.Empty;
-            foreach (var Key in coll.Keys)
-            {
-                if (Key != "previousStepId"
-                    && Key != "__RequestVerificationToken"
-                    && !Key.StartsWith("xxx"))
-                {
-                    JObject f = new JObject();
-                    f.Add("id", Key);
-                    f.Add("value", coll[Key].ToString());
-                    fields.Add(f);
-                }
-                if (Key == "xxx-Process-Schema")
-                {
-                    schemaId = coll[Key].ToString();
-                }
-            }
 
-            foreach (var file in coll.Files)
-            {
-                fields.Add(AddImageToSubmission(file.Name, file.FileName, file.ContentType, file));
-            }
+            dynamic post = _siccarFormManager.BuildFormSubmissionModel(coll);
+            var schemaId = _siccarFormManager.ReturnFieldFromSubmission(coll, "xxx-Process-Schema");
 
-
-            dynamic post = new { stepComment, fields };
             var idToken = HttpContext.User.FindFirst("id_token").Value;
             var userId = HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            
+            
             await _connector.SubmitStep(post, idToken, coll["previousStepId"]);
             _statusCache.AddUserToJustCompletedStepCache(userId, schemaId);
             _statusCache.UpdateProgressReportToReflectSubmission(userId);

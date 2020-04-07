@@ -8,16 +8,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using MVC_App.Cache;
-using MVC_App.Cache.Caches;
-using MVC_App.Cache.Requestors;
-using MVC_App.Cache.V2;
 using MVC_App.Siccar;
+using Siccar.CacheManager;
+using Siccar.CacheManager.Caches;
+using Siccar.CacheManager.ModelManagers;
+using Siccar.CacheManager.Requestors;
+using Siccar.Connector.Connector;
+using Siccar.Connector.Http;
+using Siccar.Connector.STS;
+using Siccar.FormManager;
 
 namespace MVC_App
 {
@@ -76,15 +81,31 @@ namespace MVC_App
 
         private void ConfigureSiccarServices(IServiceCollection services)
         {
-            var siccar = new SiccarConfig();
-            Configuration.Bind("SiccarConfig", siccar);
+            var siccarconfig = new SiccarConfig();
+            Configuration.Bind("SiccarConfig", siccarconfig);
 
-            var client = new SiccarHttpClient();
-            var connector = new SiccarConnector(siccar, client);
 
-            services.AddSingleton<ISiccarConfig>(siccar);
-            services.AddSingleton<ISiccarConnector>(connector);
+            services.AddSingleton<IMemoryCache, MemoryCache>();
+
+            var siccarendpoints = new SiccarEndpoints();
+            Configuration.Bind("SiccarEndpoints", siccarendpoints);
+
+            var client = new SiccarHttpClient(new System.Net.Http.HttpClient());
+
+            services.AddSingleton<ISiccarConfig>(siccarconfig);
+            services.AddSingleton<ISiccarEndpoints>(siccarendpoints);
+
+            services.AddSingleton<ISiccarConnector>((container) =>
+            {
+                return new SiccarConnector(siccarendpoints, client, container.GetRequiredService<ILogger<SiccarConnector>>());
+            });
+
+
             services.AddSingleton<ISiccarHttpClient>(client);
+
+
+            services.AddSingleton<ISiccarSTSClient>(new SiccarSTSClient(siccarconfig.SiccarSTSClientId, new System.Net.Http.HttpClient()));
+
             services.AddSingleton<ISiccarStatusCache, SiccarStatusCache>();
             services.AddSingleton<IHostedService, TriggerCacheService>();
             services.AddSingleton<ISiccarTransactionRequestor, SiccarTransactionRequestor>();
@@ -100,6 +121,8 @@ namespace MVC_App
 
             services.AddSingleton<IProgressReportModelManager, ProgressReportModelManager>();
             services.AddSingleton<ISiccarTransactionManager, SiccarTransactionManager>();
+
+            services.AddSingleton<ISiccarFormManager, SiccarFormManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

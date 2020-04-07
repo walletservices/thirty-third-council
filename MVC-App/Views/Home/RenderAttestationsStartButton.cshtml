@@ -1,4 +1,4 @@
-﻿@model MVC_App.Models.SiccarStatusCacheResponse
+﻿@model MVC_App.Models.SiccarStatusCacheResponseViewModel
 @{
     if (Model != null)
     {
@@ -8,12 +8,12 @@
         else
         {
             var preRequisiteProcess = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS);
-            if (preRequisiteProcess.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+            if (preRequisiteProcess.ProcessStatus.ToString() == "COMPLETED")
             {
                 var process = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS);
                 if (process == null ||
-                    process.ProcessStatus == Cache.ProcessStatus.TO_BE_IMPLEMENTED_ACTION_WITH_USER ||
-                    process.ProcessStatus == Cache.ProcessStatus.NOT_STARTED
+                    process.ProcessStatus.ToString() == "TO_BE_IMPLEMENTED_ACTION_WITH_USER" ||
+                    process.ProcessStatus.ToString() == "NOT_STARTED"
                     )
                 {
                     <div class="ui segment">
@@ -27,7 +27,7 @@
                         </a>
                     </div>
                 }
-                else if (process != null && process.ProcessStatus == Cache.ProcessStatus.IN_PROGRESS)
+                else if (process != null && process.ProcessStatus.ToString() == "IN_PROGRESS")
                 {
                     <div class="ui header small">Your National Entitlement card application is being processed.</div>
                     <partial name="RenderProgressReport" , model="@Model.ProgressReports.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS)" />

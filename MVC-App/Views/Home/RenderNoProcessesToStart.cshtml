@@ -1,4 +1,4 @@
-﻿@model MVC_App.Models.SiccarStatusCacheResponse
+﻿@model MVC_App.Models.SiccarStatusCacheResponseViewModel    
 @{
     if (Model != null)
     {
@@ -13,9 +13,9 @@
 
             if (process1 != null)
             {
-                if (process1.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+                if (process1.ProcessStatus.ToString() == "COMPLETED")
                 {
-                    if (process2 != null && (process2.ProcessStatus == Cache.ProcessStatus.COMPLETED || process2.ProcessStatus == Cache.ProcessStatus.IN_PROGRESS))
+                    if (process2 != null && (process2.ProcessStatus.ToString() == "COMPLETED" || process2.ProcessStatus.ToString() == "IN_PROGRESS"))
                     {
                         <div class="ui segment">
                             <div class="ui header medium">There are no processes to start at this time.</div>

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace MVC_App
@@ -13,5 +11,8 @@ namespace MVC_App
 
         Task<string> SubmitStep(dynamic content, string idToken, string transactionId);
 
+        Task<string> GetTransaction(string idToken, string transactionId);
+
+        Task<FileContentResult> GetDocumentTransaction(string idToken, string transactionId);
     }
 }

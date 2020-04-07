@@ -1,38 +1,24 @@
-﻿@model List<DataTable>
-@using System.Data;
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
 @{
-    ViewData["Title"] = "Progress";
+    ViewData["Title"] = "Progress Reports";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="ui container">
+    <div class="ui segment">
+        <div class="ui header medium">@ViewData["Title"]</div>
 
+        @ViewData["Progress"]
 
-
-@ViewData["Progress"]
-
-@foreach (var table in Model)
-{
-    <br />
-    <h3>@table.TableName</h3>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                @foreach (DataColumn col in table.Columns)
-                {
-                    <th>@col.ColumnName</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (DataRow row in table.Rows)
+        @if (Model != null)
+        {
+            @if (Model.ProgressReports.Count == 0)
             {
-                <tr>
-                    @foreach (DataColumn col in table.Columns)
-                    {
-                        <td>@row[col.ColumnName]</td>
-                    }
-                </tr>
+                <div class="ui header small">Please complete an application to start a process</div>
             }
-        </tbody>
-    </table>
-}
 
+            @foreach (var pr in Model.ProgressReports)
+            {
+                <partial name="RenderProgressReport" , model="@pr" />
+            }
+        }
+    </div>
+</div>

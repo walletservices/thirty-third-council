@@ -90,17 +90,17 @@ As the 33rd council is redirected to from the Siccar B2C; if the URL is changed 
 
 #### Starting The First Process
 The first process directly calls Siccar and starts a process without extra information.  
-![Starting Process A](https://raw.githubusercontent.com/walletservices/thirty-third-council/master/StartProcessA.PNG)
+![Starting Process A](StartProcessA.png)
 
 The above sequence diagram demonstrates the interactions between the logged in user, the app and Siccar.
 
 #### Starting Process B 
 The second process is started via the STS.  The STS interrogates the users wallet for the claims (which are provided in the app settings of the app) and then redirects to Siccar passing the returned claims  via a secondary JWT token.  These extra claims are then added to the ledger when starting the process and then returned to the user for confirmation. 
-![Starting Process B](https://raw.githubusercontent.com/walletservices/thirty-third-council/master/StartProcessB.PNG)
+![Starting Process B](StartProcessB.png)
 
 #### Starting Process C
 The third process is started via the STS.  The STS interrogates the users wallet for the attestations (which are provided in the app settings of the app) and then redirects to Siccar passing the returned attestations via a secondary JWT token.  These extra attestations are then added to the ledger when starting the process.  They are not returned to the user. 
-![Starting Process C](https://raw.githubusercontent.com/walletservices/thirty-third-council/master/StartProcessC.PNG)
+![Starting Process C](StartProcessC.png)
 
 #### Core differences between the STS call for claims and attestations
 The claims call is initiated with the following parameters.
@@ -126,44 +126,15 @@ token: <JWT token from Siccar>
 scopes: <Scopes from App Settings> ... ExpectedAttestations
 ````
 
-#### System URLS 
-* 33rd Council : https://thirdythirdcouncil.azurewebsites.net/ 
+#### Interesting URLS 
+33rd Council : 
 * Designer: https://dev.design.pds-poc.test.myaccount.scot/
 * Agent Executor: https://dev.agent.pds-poc.test.myaccount.scot/
 * Citizen Executor: https://dev.citizen.pds-poc.test.myaccount.scot/
 * Siccar Swagger: https://poc.dlt.test.myaccount.scot/swagger/index.html
 
-#### Updating Config ina deployed instance 
-It is possible to update the config of the POC web app without redeploying the code.  
-The use cases for that are the following
-* Changing redirect url for POC app 
-* Changing version or process id (or both)
-
-To do this 
-navigate to one of the websites above
-https://thirdythirdcouncil.azurewebsites.net
-Then add .scm before the azurewebsites.net 
-https://thirdythirdcouncil.scm.azurewebsites.net
-This will ask you to log in; you must have the correct permissions to log into the app.
-After logging in 
-Click debug at the top and select powershell
-After the page loads navigate to /site/wwwroot/
-Click appsettings.json and this can now be directed modified. 
-
-#### Deploying the app 
-Deployment can be done from any devs machine if they access to the subscription.
-* Load Visual Studio solution
-* Right Click on project 
-* Click Publish
-* Choose subscription (you must have the correct rights)
-* Find the existing app plan (or create another) 
-  * The existing app is deployed to 
-  * Subscription: a65cdfe5-a07c-4566-be03-1c4ca7ec8a66
-  * Resource group: thirtythirdcouncil
-  * thirdythirdcouncil app 
 
 #### Issues
 * Due to the nature of the POC the system currently does not log the user out of the 33rd council if their token expires. 
 * It also does not update the token which means the session can only last for an hour. 
-* Process B and C cannot be started via the client executor. 
-* Signing up to myaccount via the sign up link does not provide a smooth interface.  Not sure this is POC related.
+* Process B and C cannot be started via the client executor.   

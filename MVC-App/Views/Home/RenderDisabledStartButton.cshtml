@@ -1,0 +1,56 @@
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
+@{
+    if (Model != null)
+    {
+        if (Model.ProcessResponses.Count == 0)
+        {
+            <div class="ui segment">
+                <a asp-controller="Home" asp-action="StartProcessA" class="initiateFade">
+                    <div class="ui animated fade button large fluid primary " tabindex="0">
+                        <div class="visible content"><i class="align left icon"></i>Apply for a Blue Badge</div>
+                        <div class="hidden content">
+                            This process will help you streamline the process for applying for a blue badge.
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            var process1Status = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS).ProcessStatus;
+
+            if (process1Status == Cache.ProcessStatus.NOT_STARTED)
+            {
+                <div class="ui segment">
+                    <a asp-controller="Home" asp-action="StartProcessA" class="initiateFade">
+                        <div class="ui animated fade button large fluid primary " tabindex="0">
+                            <div class="visible content"><i class="align left icon"></i>Apply for a Blue Badge</div>
+                            <div class="hidden content">
+                                This process will help you streamline the process for applying for a blue badge.
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else if (process1Status == Cache.ProcessStatus.TO_BE_IMPLEMENTED_ACTION_WITH_USER)
+            {
+                <div class="ui segment">
+                    <a asp-controller="Home" asp-action="StartProcessA" class="initiateFade">
+                        <div class="ui animated fade button large fluid primary " tabindex="0">
+                            <div class="visible content"><i class="align left icon"></i>Continue your process</div>
+                            <div class="hidden content">
+                                Please continue your process.
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else if (process1Status == Cache.ProcessStatus.IN_PROGRESS)
+            {
+                <div class="ui header small">Your Blue badge application is being processed.</div>
+                <partial name="RenderProgressReport" , model="@Model.ProgressReports.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS)" />
+            }
+
+        }
+    }
+}

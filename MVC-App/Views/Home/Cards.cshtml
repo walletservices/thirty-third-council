@@ -1,0 +1,30 @@
+﻿@model MVC_App.Models.SiccarStatusCacheResponse
+@{
+    ViewData["Title"] = "Cards";
+
+}
+@if (Model != null)
+{
+    @if (Model.ProcessResponses.Count == 0)
+    {
+        <div class="ui header small">Please complete an application to start a process to view your digital card</div>
+    }
+    else if (Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS).ProcessStatus != Cache.ProcessStatus.COMPLETED)
+    {
+        <div class="ui header small">Please wait for your application to be completed</div>
+    }
+    else
+    {
+        var process1 = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.DISABLEDBLUEBADGEPROCESS);
+        var process2 = Model.ProcessResponses.ToList().Find(x => x.Schema == Model.ATTESTATIONSPROCESS);
+
+        if (process1.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+        {
+            <partial name="RenderDisabilityCard" model="@process1" />
+        }
+        if (process2 != null && process2.ProcessStatus == Cache.ProcessStatus.COMPLETED)
+        {
+            <partial name="RenderNECCard" model="@process2" />
+        }
+    }
+}

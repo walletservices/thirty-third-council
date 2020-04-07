@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVC_App.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -28,6 +25,20 @@ namespace MVC_App.Siccar
                 response.EnsureSuccessStatusCode();
             }
             return response.Content.ReadAsStringAsync().Result;
+        }
+
+        public async Task<FileContentResult> GetDocument(string url, string idToken, bool ensureResponseIsValid = true)
+        {
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + idToken);
+
+            var response = await _client.GetAsync(new Uri(url));
+            if (ensureResponseIsValid)
+            {
+                response.EnsureSuccessStatusCode();
+            }
+
+            return new FileContentResult(response.Content.ReadAsByteArrayAsync().Result, response.Content.Headers.ContentType.MediaType);
         }
 
         public async Task<string> Poll(string url, string idToken)

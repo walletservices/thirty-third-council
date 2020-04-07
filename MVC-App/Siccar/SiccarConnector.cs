@@ -1,6 +1,8 @@
-﻿using MVC_App.Siccar;
+﻿using Microsoft.AspNetCore.Mvc;
+using MVC_App.Siccar;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MVC_App
@@ -18,7 +20,8 @@ namespace MVC_App
 
         public async Task<string> GetProgressReport(string idToken)
         {
-            return await _client.Get(_config.GetGetProgressReports, idToken);
+            var progressreport = await _client.Get(_config.GetGetProgressReports, idToken);
+            return progressreport;
         }
 
         public async Task<string> GetStepNextOrStartProcess(string schemaId, string schemaVersionId, string idToken, string attestationToken = null)
@@ -46,6 +49,15 @@ namespace MVC_App
             return "done";
         }
 
+        public async Task<string> GetTransaction(string idToken, string transactionId)
+        {
+            return await _client.Get($"{_config.GetTransaction}{transactionId}", idToken);
+        }
+
+        public async Task<FileContentResult> GetDocumentTransaction(string idToken, string transactionId)
+        {
+            return await _client.GetDocument($"{_config.GetDocumentTransaction}{transactionId}", idToken);
+        }
         private string FindActionFromResponse(string actionsToExecute, string schemaId, string schemaVersionId)
         {
             try

@@ -1,115 +1,152 @@
-﻿@model dynamic
+﻿@using System.Linq;
+@model dynamic
 @{
-    ViewData["Title"] = "Please Populate the Form";
+    ViewData["Title"] = "Please complete the form.";
 }
-<h2>@ViewData["Title"]</h2>
+<div class="ui container">
 
-@{
-    var fields = Model.fields.target;
+    <div class="ui medium header">@ViewData["Title"]</div>
+
+    @{
+        var fields = Model.fields.target;
+        var lastComment = Model.comments.Count > 0 ? Model.comments[0].commentText : "";
+        var guidanceNotes = Model.summary.guidanceNotes.Count > 0 ? Model.summary.guidanceNotes[0].display : "";
+        var sections = Model.sections;
+        var schemaId = Model.summary.schemaId;
+    }
 
 
-    var lastComment = Model.comments.Count > 0 ? Model.comments[Model.comments.Count-1].commentText : "";
-
-    var guidanceNotes = Model.summary.guidanceNotes.Count > 0 ? Model.summary.guidanceNotes[0].display : "";
-}
-
-
-@if (lastComment != "")
-{
-    <p></p>
-    <h3>This has been previously rejected</h3>
-    <p></p>
-    <h4>@lastComment</h4>
-    <p />
-}
-
-@if (guidanceNotes!= "")
-{
-    <p></p>
-    <h3>Guidance Notes</h3>
-    <p></p>
-    <h4>@guidanceNotes</h4>
-    <p />
-}
-
-@using (Html.BeginForm("SubmitAction", "Home", FormMethod.Post))
-{
-    <input type="hidden" value="@Model.summary.previousStepId" class"text" id="previousStepId" name="previousStepId" />
-    <p>
-
-        @foreach (var field in fields)
+    <div class="ui segment">
+        @if (lastComment != "")
         {
-            var label = field.schemaField.label;
-            var labelDisplay = label[0].display;
-            var id = field.schemaField.id;
-            var defaultValue = field.mostRecentlyRejectedValue == null ? "" : field.mostRecentlyRejectedValue;
-
-            var type = field.schemaField.type;
-
-            var help = field.schemaField.help.Count > 0 ? field.schemaField.help[0].display : "";
-
-
-            <br />
-           
-            @if (help != "")
-            {
-                @help
-                <br/>
-            }
-            @labelDisplay
-
-            if (type == "Number")
-            {
-                <input type="number" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
-            }
-            else if (type == "Date")
-            {
-                <input type="hidden" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
-                <input type="date" class="text " placeholder="@labelDisplay" id="xxx-@id" name="xxx-@id" value="@defaultValue" />
-            }
-            else if (type == "Checkbox")
-            {
-                <input type="checkbox" class="text " id="@id" name="@id" value="@defaultValue" />
-            }
-            else if (type == "MultiOption")
-            {
-                var options = field.schemaField.options;
-                <select name="@id" id="@id">
-
-                    @foreach (var option in options)
-                    {
-                        var display = option.input[0].display;
-                        var value = option.value;
-
-                        if (value == defaultValue)
-                        {
-                            <option value="@value" selected>@display</option>
-                        }
-                        else
-                        {
-                            <option value="@value">@display</option>
-                        }
-
-                    }
-
-                </select>
-            }
-            else
-            {
-                <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
-            }
-
+            <div class="ui warning message">
+                <i class="close icon"></i>
+                <div class="header">
+                    This has been previously rejected
+                </div>
+                @lastComment
+            </div>
         }
 
-        <BR />
-        <input type="submit" class="submit" value="Submit" />
-    </p>
-}
 
+        @if (guidanceNotes != "")
+        {
+            <div class="ui positive message">
+                <div class="header">
+                    Guidance Notes
+                </div>
+                <p>@guidanceNotes</p>
+            </div>
+        }
+
+
+        @using (Html.BeginForm("SubmitAction", "Home", FormMethod.Post, new { @class = "ui form", enctype = "multipart/form-data" }))
+        {
+            <input type="hidden" value="@Model.summary.previousStepId" class"text" id="previousStepId" name="previousStepId" />
+
+            @foreach (var section in sections)
+            {
+                <div class="ui segment">
+                    @foreach (var fieldId in section.field_ids)
+                    {
+                        @foreach (var field in fields)
+                        {
+                            var id = field.schemaField.id;
+                            if (fieldId != id)
+                            {
+                                continue;
+                            }
+                            var label = field.schemaField.label;
+                            var labelDisplay = label[0].display;
+                            var defaultValue = field.mostRecentlyRejectedValue == null ? "" : field.mostRecentlyRejectedValue;
+                            var type = field.schemaField.type;
+                            var help = field.schemaField.help.Count > 0 ? field.schemaField.help[0].display : "";
+                            var maxLength = field.schemaField.maxLength;
+
+
+                            <div class="inline field">
+                                <label>@labelDisplay</label>
+                                @if (help != "")
+                                {
+                                    <i data-html="@help" class="question circular icon grey helppopup"></i>
+                                }
+                                @if (type == "Number")
+                                {
+                                    <div class="ui fluid"><input type="number" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" /></div>
+                                }
+                                else if (type == "Date")
+                                {
+                                    <input type="hidden" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" />
+                                    <input type="date" class="text " placeholder="@labelDisplay" id="xxx-@id" name="xxx-@id" value="@defaultValue" />
+                                }
+                                else if (type == "Checkbox")
+                                {
+                                    <input type="checkbox" class="text " id="@id" name="@id" value="@defaultValue" />
+                                }
+                                else if (type == "MultiOption")
+                                {
+                                    var options = field.schemaField.options;
+                                    <select name="@id" id="@id">
+
+                                        @foreach (var option in options)
+                                        {
+                                            var display = option.input[0].display;
+                                            var value = option.value;
+
+                                            if (value == defaultValue)
+                                            {
+                                                <option value="@value" selected>@display</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@value">@display</option>
+                                            }
+
+                                        }
+                                    </select>
+                                }
+                                else if (type == "UploadDocument")
+                                {
+                                    <div class="ui action input">
+                                        <input type="text" id="xxx-@id" placeholder="@labelDisplay">
+                                        <label for="@id" class="ui icon button btn-file" >
+                                            <i class="file outline icon grey"></i>
+                                            <input type="file" id="@id" name="@id" style="display:none">
+                                        </label>
+                                    </div>                                   
+                                }
+                                else
+                                {
+                                    <div class="ui fluid">
+                                        <input type="text" class="text " placeholder="@labelDisplay" id="@id" name="@id" value="@defaultValue" maxlength="@maxLength" />
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            <input type="hidden" class="text" id="xxx-Process-Schema" name="xxx-Process-Schema"  value="@schemaId"/>
+            <button class="ui button submit initiateFade" type="submit">Submit Form</button>
+        }
+    </div>
+</div>
 
 <script language="javascript">
 
     $(document).ready(function () {
+
+        $('input[type=file]').on("change", function () {
+            var val = $(this).val();
+            if (val.lastIndexOf("\\") != -1) {
+                val = val.substring(val.lastIndexOf("\\")+1);
+                $("#xxx-" + $(this).attr("name")).val(val);
+            }
+        })
+
+        $('.helppopup').popup();
+
         $('input[type=date]').each(function () {
             var actualField = $("#" + getCorrectFieldName($(this).attr("name")));
             if ($(actualField).val() != "") {

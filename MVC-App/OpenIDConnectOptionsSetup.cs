@@ -5,25 +5,27 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Identity.Client;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
-using MVC_App.Models;
-using Microsoft.AspNetCore.Http;
+using MVC_App.Siccar;
+using System.Linq;
 
 namespace MVC_App
 {
     public static class B2CAuthenticationBuilderExtensions
     {
+        private static ISiccarStatusCache _cache;
+
         public static AuthenticationBuilder AddAzureAdB2C(this AuthenticationBuilder builder)
             => builder.AddAzureAdB2C(_ =>
             {
-            });
+            }, _cache);
 
         public static AuthenticationBuilder AddAzureAdB2C(this AuthenticationBuilder builder,
-            Action<B2CConfig> configureOptions)
+            Action<B2CConfig> configureOptions, ISiccarStatusCache cache)
         {
             builder.Services.Configure(configureOptions);
+            builder.Services.AddSingleton<ISiccarStatusCache>(cache);
             builder.Services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsSetup>();
             builder.AddOpenIdConnect();
             return builder;
@@ -32,11 +34,14 @@ namespace MVC_App
         public class OpenIdConnectOptionsSetup : IConfigureNamedOptions<OpenIdConnectOptions>
         {
 
-            private string tempIdToken; 
+            private string tempIdToken;
+            private ISiccarStatusCache _cache;
 
-            public OpenIdConnectOptionsSetup(IOptions<B2CConfig> b2cOptions)
+
+            public OpenIdConnectOptionsSetup(IOptions<B2CConfig> b2cOptions, ISiccarStatusCache cache)
             {
                 B2CConfig = b2cOptions.Value;
+                _cache = cache;
             }
 
             public B2CConfig B2CConfig { get; set; }
@@ -77,9 +82,12 @@ namespace MVC_App
             }
             public async Task<int> OnTokenReceived(TicketReceivedContext context)
             {
-
                 var identity = context.Principal.Identity as ClaimsIdentity;
                 identity.AddClaim(new Claim("id_token", tempIdToken));
+                var name = identity.Claims.ToList().Find(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+                //Do not wait for this , the cache will get upated in the background
+                _cache.RefreshAndDontWait(name.Value, tempIdToken);
                 return await Task.FromResult(0);
 
             }

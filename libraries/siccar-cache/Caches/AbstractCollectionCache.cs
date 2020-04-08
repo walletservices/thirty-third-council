@@ -53,28 +53,9 @@ namespace siccar_cache.Caches
             }
         }
 
-        protected void AddValues(string key, HashSet<T> elements)
+        protected void ReplaceCacheValue(string key, HashSet<T> elements)
         {
-            HashSet<T> valuesInCache;
-            if (!_cache.TryGetValue(key, out valuesInCache))
-            {
-                _cache.Set(key, elements, _cacheOptions);
-            }
-            else
-            {
-                // Cache isnt replacing newer with old, so this should do it 
-                // Need to find a better answer to this 
-                foreach(var element in elements)
-                {
-                    if (valuesInCache.ToList<T>().Contains(element))
-                    {
-                        valuesInCache.Remove(element);
-                        valuesInCache.Add(element);
-                    }
-                }
-                
-                _cache.Set(key, valuesInCache, _cacheOptions);
-            }
-        }
+            _cache.Set(key, elements, _cacheOptions);
+        }        
     }
 }

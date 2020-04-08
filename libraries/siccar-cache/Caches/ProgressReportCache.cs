@@ -29,7 +29,7 @@ namespace Siccar.CacheManager.Caches
 
         public void AddProgressReports(string userId, HashSet<ProgressReport> reports)
         {
-            AddValues(BuildKey(userId), reports);
+            ReplaceCacheValue(BuildKey(userId), reports);
         }
 
         public void AddProgressReport(string userId, ProgressReport report)

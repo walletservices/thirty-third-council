@@ -33,7 +33,7 @@ namespace Siccar.CacheManager.Caches
 
         public void AddSchemas(string userId, HashSet<ProcessSchema> schemas)
         {
-            base.AddValues(BuildKey(userId), schemas);
+            base.ReplaceCacheValue(BuildKey(userId), schemas);
         }
 
         public HashSet<ProcessSchema> GetSchemas(string userId)
